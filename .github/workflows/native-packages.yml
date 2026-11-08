@@ -51,7 +51,7 @@ jobs:
         run: node scripts/ci-rust-toolchain.mjs
 
       - name: Setup Rust and target
-        uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ steps.rust-version.outputs.version }}
           targets: ${{ matrix.target }}

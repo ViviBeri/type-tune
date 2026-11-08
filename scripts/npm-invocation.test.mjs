@@ -35,6 +35,7 @@ test("native workflows install the same toolchain and target that cargo uses", (
   for (const file of ["native-packages.yml", "npm-publish.yml"]) {
     const workflow = fs.readFileSync(`.github/workflows/${file}`, "utf8");
     assert.match(workflow, /toolchain: \$\{\{ steps\.rust-version\.outputs\.version \}\}/);
+    assert.match(workflow, /uses: dtolnay\/rust-toolchain@stable/);
     assert.match(workflow, /targets: \$\{\{ matrix\.target \}\}/);
     assert.match(workflow, /node scripts\/ci-rust-toolchain\.mjs/);
     assert.match(workflow, /node-version: "24"/);
