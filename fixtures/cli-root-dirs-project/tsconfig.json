@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "rootDirs": ["src", "virtual"],
+    "strict": true
+  },
+  "include": ["src/**/*.ts", "virtual/**/*.ts"]
+}

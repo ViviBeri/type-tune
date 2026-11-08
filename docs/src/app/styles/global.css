@@ -1,0 +1,323 @@
+@import "@fontsource-variable/source-sans-3/wght.css";
+
+:root {
+  color-scheme: dark;
+  --primary: #7caa4a;
+  --secondary: #4c5b35;
+  --hover: #646b54;
+  --background: #171917;
+  --surface: var(--background);
+  --surface-muted: var(--secondary);
+  --foreground: var(--primary);
+  --muted: var(--primary);
+  --subtle: var(--primary);
+  --border: var(--secondary);
+  --border-strong: var(--primary);
+  --accent: var(--primary);
+  --accent-hover: var(--hover);
+  --accent-soft: var(--background);
+  --code-background: var(--background);
+  --code-foreground: var(--primary);
+  --code-muted: var(--primary);
+  --code-border: var(--secondary);
+  --font-sans:
+    "Source Sans 3 Variable", "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading: Optima, "Source Sans 3 Variable", "Source Sans 3", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --header-height: 8rem;
+  --sidebar-width: 12rem;
+  --content-width: 76rem;
+  --reading-width: 48rem;
+  --radius-sm: 0;
+  --radius: 0;
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+  scrollbar-color: var(--primary) var(--background);
+}
+
+::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid var(--background);
+  background: var(--primary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--primary);
+  content: "";
+  transition: width 500ms ease;
+}
+
+.link-underline:is(:hover, :focus-visible)::after {
+  width: 100%;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--background);
+}
+
+.pixel-frame {
+  --frame-tile-pixel: 3px;
+  --frame-step-1: var(--frame-tile-pixel);
+  --frame-step-2: calc(var(--frame-step-1) * 2);
+  --frame-step-3: calc(var(--frame-step-1) * 3);
+  --frame-step-4: calc(var(--frame-step-1) * 4);
+  --frame-step-6: calc(var(--frame-step-1) * 6);
+  --frame-color: var(--pixel-frame-color, var(--border-strong));
+  --frame-edge: calc(100% - var(--frame-step-6));
+  --frame-cut: var(--frame-step-3);
+  --frame-fill: var(--pixel-frame-fill, var(--surface));
+  background-image:
+    linear-gradient(var(--frame-color) 0 0), linear-gradient(var(--frame-color) 0 0),
+    linear-gradient(var(--frame-color) 0 0), linear-gradient(var(--frame-color) 0 0),
+    linear-gradient(var(--frame-color) 0 0), linear-gradient(var(--frame-color) 0 0),
+    linear-gradient(var(--frame-color) 0 0), linear-gradient(var(--frame-color) 0 0),
+    linear-gradient(var(--frame-color) 0 0), linear-gradient(var(--frame-color) 0 0),
+    linear-gradient(var(--frame-color) 0 0), linear-gradient(var(--frame-color) 0 0),
+    linear-gradient(var(--frame-fill) 0 0), linear-gradient(var(--frame-fill) 0 0),
+    linear-gradient(var(--frame-fill) 0 0), linear-gradient(var(--frame-fill) 0 0),
+    linear-gradient(var(--frame-fill) 0 0);
+  background-repeat: no-repeat;
+  background-size:
+    var(--frame-edge) var(--frame-step-1),
+    var(--frame-edge) var(--frame-step-1),
+    var(--frame-step-1) var(--frame-edge),
+    var(--frame-step-1) var(--frame-edge),
+    var(--frame-step-1) var(--frame-step-1),
+    var(--frame-step-1) var(--frame-step-1),
+    var(--frame-step-1) var(--frame-step-1),
+    var(--frame-step-1) var(--frame-step-1),
+    var(--frame-step-1) var(--frame-step-1),
+    var(--frame-step-1) var(--frame-step-1),
+    var(--frame-step-1) var(--frame-step-1),
+    var(--frame-step-1) var(--frame-step-1),
+    calc(100% - var(--frame-step-6)) var(--frame-step-1),
+    calc(100% - var(--frame-step-4)) var(--frame-step-1),
+    calc(100% - var(--frame-step-2)) calc(100% - var(--frame-step-6)),
+    calc(100% - var(--frame-step-4)) var(--frame-step-1),
+    calc(100% - var(--frame-step-6)) var(--frame-step-1);
+  background-position:
+    var(--frame-cut) 0,
+    var(--frame-cut) 100%,
+    0 var(--frame-cut),
+    100% var(--frame-cut),
+    left var(--frame-step-2) top var(--frame-step-1),
+    left var(--frame-step-1) top var(--frame-step-2),
+    right var(--frame-step-2) top var(--frame-step-1),
+    right var(--frame-step-1) top var(--frame-step-2),
+    left var(--frame-step-1) bottom var(--frame-step-2),
+    left var(--frame-step-2) bottom var(--frame-step-1),
+    right var(--frame-step-2) bottom var(--frame-step-1),
+    right var(--frame-step-1) bottom var(--frame-step-2),
+    var(--frame-step-3) var(--frame-step-1),
+    var(--frame-step-2) var(--frame-step-2),
+    var(--frame-step-1) var(--frame-step-3),
+    var(--frame-step-2) calc(100% - var(--frame-step-2)),
+    var(--frame-step-3) calc(100% - var(--frame-step-1));
+}
+
+.site-main {
+  min-height: calc(100vh - var(--header-height));
+}
+
+.page-container {
+  width: min(100% - 2rem, var(--content-width));
+  margin-inline: auto;
+}
+
+.site-main--home {
+  min-height: 0;
+  padding-top: 0;
+}
+
+.docs-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  width: min(100% - 6rem, 86rem);
+  min-height: calc(100vh - var(--header-height));
+  margin-inline: auto;
+  padding-block: 3rem 6rem;
+}
+
+.docs-content {
+  min-width: 0;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.docs-content .pixel-frame {
+  --frame-tile-pixel: 2px;
+}
+
+.docs-content > article {
+  margin-inline: 0;
+}
+
+.docs-content .config-page {
+  max-width: 60rem;
+}
+
+.prose {
+  max-width: var(--reading-width);
+}
+
+.content-section {
+  margin-top: 3.5rem;
+}
+
+.content-section:first-child {
+  margin-top: 0;
+}
+
+.content-section p,
+.content-section li {
+  color: var(--primary);
+}
+
+.content-section strong {
+  color: var(--foreground);
+}
+
+.docs-content code:not(pre code),
+.inline-code {
+  padding: 0.12rem 0.35rem;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.info-card {
+  padding: 1.75rem;
+  --pixel-frame-color: var(--secondary);
+  --pixel-frame-fill: var(--background);
+}
+
+.info-card:hover {
+  --pixel-frame-color: var(--hover);
+}
+
+.info-card h2,
+.info-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+.info-card p {
+  margin: 0;
+  font-size: 0.94rem;
+}
+
+.section-divider {
+  height: 1px;
+  margin-block: 4.5rem;
+  border: 0;
+  background: var(--border);
+}
+
+@media (max-width: 800px) {
+  :root {
+    --header-height: 4rem;
+  }
+
+  html {
+    scroll-padding-top: calc(var(--header-height) + 0.5rem);
+  }
+
+  body {
+    padding-top: var(--header-height);
+  }
+
+  .docs-layout {
+    display: block;
+    width: min(100% - 2.5rem, 40rem);
+    padding-block: 1rem 4rem;
+  }
+
+  .docs-content {
+    padding-top: 2.5rem;
+    font-size: 1rem;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

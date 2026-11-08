@@ -1,0 +1,55 @@
+name: Changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Git ref or tag to generate from"
+        required: true
+        default: "HEAD"
+      release_name:
+        description: "Version label without the v prefix"
+        required: true
+      dry_run:
+        description: "Print output without writing or opening a PR"
+        required: true
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      no_ai:
+        description: "Skip provider calls and use deterministic output"
+        required: true
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update changelog
+        uses: necoz-oss/changelog-bot@v0
+        with:
+          changelog-path: CHANGELOG.md
+          base-branch: main
+          provider: openai
+          release-tag: ${{ inputs.release_tag }}
+          release-name: ${{ inputs.release_name }}
+          language: en
+          npm-version: 0.5.1
+          dry-run: ${{ inputs.dry_run }}
+          dry-run-json-report: "true"
+          no-ai: ${{ inputs.no_ai }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

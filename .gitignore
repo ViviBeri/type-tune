@@ -1,0 +1,7 @@
+node_modules/
+dist/
+target/
+.type-tune/
+coverage/
+sample-project/
+.serena/

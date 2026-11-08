@@ -1,0 +1,21 @@
+{
+  "name": "@type-tune/docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check": "astro check",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/source-sans-3": "5.2.5",
+    "is-kit": "1.11.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.9",
+    "astro": "6.4.8",
+    "typescript": "6.0.3"
+  }
+}

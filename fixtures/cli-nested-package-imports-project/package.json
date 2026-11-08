@@ -1,0 +1,7 @@
+{
+  "name": "type-tune-cli-nested-package-imports-project",
+  "private": true,
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

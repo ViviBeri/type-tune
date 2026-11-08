@@ -1,0 +1,20 @@
+[package]
+name = "type-tune"
+version = "1.0.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "type-tune"
+path = "src/main.rs"
+
+[dependencies]
+type-tune-core = { path = "../type-tune-core" }
+serde_json = "1.0"
+crossterm = "0.29.0"
+sha2 = "0.10"
+
+[lints]
+workspace = true

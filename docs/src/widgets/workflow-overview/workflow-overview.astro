@@ -1,0 +1,117 @@
+---
+import Heading from "../../shared/ui/heading.astro";
+import CodeTabs from "../../shared/ui/code-tabs.astro";
+import HomeArt from "../../shared/ui/home-art.astro";
+
+const planningCommands = [
+  { manager: "Scan", command: "type-tune scan --project tsconfig.json" },
+  { manager: "Plan", command: "type-tune plan --project tsconfig.json --out .type-tune/plan.json --markdown .type-tune/plan.md" },
+];
+const applyingCommands = [
+  { manager: "Dry run", command: "type-tune apply --plan .type-tune/plan.json --markdown .type-tune/plan.md --dry-run" },
+  { manager: "Apply", command: "type-tune apply --plan .type-tune/plan.json --markdown .type-tune/plan.md" },
+];
+---
+<section class="workflow-overview" id="workflow">
+  <div class="workflow-overview__copy">
+    <Heading>Workflow</Heading>
+    <p>Scan your project, review a plan, and apply the moves you approve. Preview the changes with a dry run before updating your files.</p>
+    <a class="link-underline" href="/usage/workflow">View the complete workflow <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="workflow-overview__commands">
+    <CodeTabs commands={planningCommands} label="Scan and plan" />
+    <div class="workflow-overview__apply">
+      <div class="workflow-overview__dust" aria-hidden="true">
+        <HomeArt name="dust-02" width={74} height={65} mobileWidth={31} mobileHeight={27} />
+      </div>
+      <CodeTabs commands={applyingCommands} label="Preview and apply" />
+    </div>
+  </div>
+  <div class="workflow-overview__types" aria-hidden="true">
+    <HomeArt name="cardboard-box-type" width={165} height={85} mobileWidth={76} mobileHeight={39} />
+  </div>
+  <div class="workflow-overview__box" aria-hidden="true">
+    <HomeArt name="cardboard-box-dust" width={129} height={93} mobileWidth={60} mobileHeight={43} />
+  </div>
+</section>
+<style>
+  .workflow-overview {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 6rem;
+    padding-block: 8rem 12rem;
+  }
+  .workflow-overview__copy p {
+    margin: 1.5rem 0 0;
+  }
+  .workflow-overview__copy a {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+  .workflow-overview__copy a span {
+    display: inline-block;
+    transition: transform 160ms ease;
+  }
+  .workflow-overview__copy a:is(:hover, :focus-visible) span {
+    transform: translateX(0.2em);
+  }
+  .workflow-overview__copy a:is(:hover, :focus-visible)::after {
+    width: calc(100% + 0.2em);
+  }
+  .workflow-overview__commands {
+    display: grid;
+    min-width: 0;
+    gap: 2rem;
+  }
+  .workflow-overview__apply {
+    position: relative;
+    min-width: 0;
+  }
+  .workflow-overview__dust {
+    position: absolute;
+    z-index: 2;
+    top: -3.25rem;
+    left: -1.5rem;
+    pointer-events: none;
+  }
+  .workflow-overview__types {
+    position: absolute;
+    bottom: -1rem;
+    left: -7rem;
+  }
+  .workflow-overview__box {
+    position: absolute;
+    bottom: 3rem;
+    right: -5rem;
+  }
+  @media (max-width: 800px) {
+    .workflow-overview {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+      padding-block: 0 6rem;
+    }
+    .workflow-overview__copy p {
+      margin-top: 1rem;
+    }
+    .workflow-overview__commands {
+      gap: 2rem;
+    }
+    .workflow-overview__dust {
+      top: -0.5rem;
+      left: -0.75rem;
+    }
+    .workflow-overview__types {
+      top: -3rem;
+      bottom: auto;
+      left: auto;
+      right: -2.5rem;
+    }
+    .workflow-overview__box {
+      bottom: 0;
+      right: -2rem;
+    }
+  }
+</style>

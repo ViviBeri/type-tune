@@ -1,0 +1,156 @@
+---
+import SiteShell from "../../app/providers/site-shell.astro";
+import Callout from "../../shared/ui/callout.astro";
+import Heading from "../../shared/ui/heading.astro";
+import PageHeader from "../../shared/ui/page-header.astro";
+import TextLink from "../../shared/ui/text-link.astro";
+---
+
+<SiteShell
+  title="Why type-tune?"
+  description="Understand why moving shared TypeScript declarations needs a deterministic, reviewable workflow."
+  withSidebar
+>
+  <article class="prose">
+    <PageHeader
+      eyebrow="Usage"
+      title="Why type-tune?"
+      lead="Move shared declarations without manually chasing every import and barrel export."
+    />
+
+    <section class="content-section">
+      <Heading>The problem</Heading>
+      <p>
+        Shared types often begin next to the first feature that needs them. Later, API code, UI,
+        tests, and application state all import the same declaration from a file that no longer feels
+        like the right home.
+      </p>
+      <p>
+        The hard part is not choosing a destination. It is moving the declaration without missing an
+        import, breaking a barrel export, or losing a local type dependency. type-tune handles that
+        mechanical work while leaving the decision in a reviewable plan.
+      </p>
+      <Callout>
+        Scan output and candidate IDs are deterministic. Optional AI review can annotate a plan, but
+        it never controls the AST rewrite path.
+      </Callout>
+    </section>
+
+    <section class="content-section">
+      <Heading>How it differs from related tools</Heading>
+      <p>
+        type-tune is a focused refactoring tool, not a dead-code detector or a general-purpose
+        codemod framework. Its input is a live exported type or interface; its output is a reviewed,
+        validated move.
+      </p>
+
+      <div class="comparison-wrap pixel-frame" tabindex="0" role="region" aria-label="Comparison with related tools">
+        <table>
+          <thead>
+            <tr>
+              <th>Tool or category</th>
+              <th>Best at</th>
+              <th>Typical action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><TextLink href="https://knip.dev/" external>Knip</TextLink> and dead-code tools</td>
+              <td>Finding unused files, dependencies, and exports</td>
+              <td>Report or remove code that can disappear</td>
+            </tr>
+            <tr>
+              <td>IDE refactors</td>
+              <td>Moving one declaration you have already chosen</td>
+              <td>Perform an interactive, editor-driven move</td>
+            </tr>
+            <tr>
+              <td>Codemod toolkits</td>
+              <td>Building custom source transformations</td>
+              <td>Provide AST matching and rewrite primitives</td>
+            </tr>
+            <tr>
+              <td><strong>type-tune</strong></td>
+              <td>Finding live shared types that need a better home</td>
+              <td>Plan, move, update imports, validate, and roll back on failure</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <Callout>
+        Knip removes what is unused. type-tune relocates what is shared. Run cleanup first, then use
+        type-tune to reorganize the live types that remain.
+      </Callout>
+    </section>
+
+    <section class="content-section">
+      <Heading>Using type-tune with Knip</Heading>
+      <p>
+        type-tune may leave a type-only compatibility re-export at the original module path. This
+        protects star barrels and consumers outside the selected TypeScript project, but Knip may
+        correctly see that old-path export as unused by the files it analyzed.
+      </p>
+      <p>
+        Keep the re-export when the old path is still a supported public surface. In that case,
+        Knip supports marking the export with <code>@public</code>; see its <TextLink
+          href="https://knip.dev/reference/jsdoc-tsdoc-tags#public"
+          external>JSDoc and TSDoc tag guidance</TextLink
+        >. Remove the compatibility export only after framework builds and external consumers confirm
+        that nothing still relies on the old path. Review this case before running Knip auto-fix for
+        unused exported types.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <Heading>Current scope</Heading>
+      <p>
+        type-tune analyzes exported type aliases and interfaces in <code>.ts</code> and
+        <code>.tsx</code> files loaded from one <code>tsconfig.json</code>. Run it separately for each
+        package in a monorepo.
+      </p>
+      <Callout>
+        JavaScript included through <code>allowJs</code>, framework component files such as
+        <code>.vue</code>, <code>.svelte</code>, and <code>.astro</code>, and external package consumers
+        are not scanned or rewritten. Compatibility re-exports preserve the original module path,
+        but you should still run framework builds and consumer tests after applying a move.
+      </Callout>
+    </section>
+  </article>
+</SiteShell>
+
+<style>
+  .comparison-wrap {
+    margin-block: 1.75rem;
+    overflow-x: auto;
+    padding: var(--frame-step-1);
+    --pixel-frame-color: var(--border);
+    --pixel-frame-fill: var(--background);
+  }
+
+  table {
+    width: 100%;
+    min-width: 42rem;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: color-mix(in srgb, var(--secondary) 16%, transparent);
+    color: var(--foreground);
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+</style>

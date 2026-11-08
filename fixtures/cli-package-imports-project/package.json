@@ -1,0 +1,11 @@
+{
+  "name": "type-tune-cli-package-imports-project",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#model": "./src/model.ts"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

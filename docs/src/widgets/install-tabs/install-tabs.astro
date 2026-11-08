@@ -1,0 +1,66 @@
+---
+import { installCommands } from "../../shared/config/install-commands.js";
+import CodeTabs from "../../shared/ui/code-tabs.astro";
+import Heading from "../../shared/ui/heading.astro";
+import HomeArt from "../../shared/ui/home-art.astro";
+---
+<section class="install-section" id="install">
+  <div class="install-section__copy">
+    <Heading>Install</Heading>
+    <p>Install type-tune as a development dependency, or try a one-off scan with <code>npx type-tune scan --project tsconfig.json</code>.</p>
+  </div>
+  <CodeTabs commands={installCommands} decoration="dust" />
+  <div class="install-section__dust" aria-hidden="true">
+    <HomeArt name="dust-01" width={92} height={81} mobileWidth={38} mobileHeight={34} />
+  </div>
+  <div class="install-section__crab" aria-hidden="true">
+    <HomeArt name="cardboard-box-crab" width={135} height={113} mobileWidth={62} mobileHeight={52} />
+  </div>
+</section>
+<style>
+  .install-section {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 6rem;
+    padding-block: 3rem 10rem;
+  }
+  p {
+    margin: 1.5rem 0 0;
+  }
+  code {
+    font: inherit;
+    overflow-wrap: anywhere;
+  }
+  .install-section__dust {
+    position: absolute;
+    top: -2rem;
+    left: 17%;
+  }
+  .install-section__crab {
+    position: absolute;
+    bottom: -2rem;
+    left: -7rem;
+  }
+  @media (max-width: 800px) {
+    .install-section {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+      padding-block: 0 7rem;
+    }
+    .install-section__crab {
+      top: -5rem;
+      bottom: auto;
+      left: -2rem;
+    }
+    .install-section__dust {
+      top: auto;
+      bottom: 2rem;
+      left: 1rem;
+    }
+    p {
+      margin-top: 1rem;
+    }
+  }
+</style>

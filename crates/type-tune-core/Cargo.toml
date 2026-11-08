@@ -1,0 +1,23 @@
+[package]
+name = "type-tune-core"
+version = "1.0.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+regex = "1.11"
+sha2 = "0.10"
+tree-sitter = "0.25"
+tree-sitter-typescript = "0.23"
+time = { version = "0.3", features = ["formatting"] }
+ureq = { version = "2.12", features = ["json"] }
+
+[dev-dependencies]
+tempfile = "3.24"
+
+[lints]
+workspace = true

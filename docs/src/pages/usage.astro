@@ -1,0 +1,42 @@
+---
+import SiteShell from "../app/providers/site-shell.astro";
+import PageHeader from "../shared/ui/page-header.astro";
+import PageIndex from "../widgets/page-index/page-index.astro";
+
+const guidePages = [
+  {
+    href: "/usage/why-type-tune",
+    title: "Why type-tune?",
+    description: "Understand the refactoring problem and why the workflow stays reviewable.",
+    action: "Read guide",
+  },
+  {
+    href: "/usage/workflow",
+    title: "Workflow",
+    description: "Follow scan, plan, review, dry-run, and apply from start to finish.",
+    action: "Read guide",
+  },
+  {
+    href: "/usage/usecases",
+    title: "Usecases",
+    description: "Choose the right workflow for common type extraction situations.",
+    action: "Read guide",
+  },
+];
+---
+
+<SiteShell
+  title="Usage"
+  description="Learn why type-tune exists and follow its reviewable TypeScript type extraction workflow."
+  withSidebar
+>
+  <article class="prose">
+    <PageHeader
+      eyebrow="Guide"
+      title="Use type-tune"
+      art={{ src: "/animation/cleaning-toilet.gif", alt: "A crab plunges a toilet" }}
+      lead="Move shared TypeScript declarations through a plan you can inspect before any rewrite is kept."
+    />
+    <PageIndex label="Usage guides" items={guidePages} />
+  </article>
+</SiteShell>

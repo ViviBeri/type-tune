@@ -1,0 +1,61 @@
+---
+import SiteShell from "../../app/providers/site-shell.astro";
+import CodeBlock from "../../shared/ui/code-block.astro";
+import Heading from "../../shared/ui/heading.astro";
+import PageHeader from "../../shared/ui/page-header.astro";
+---
+
+<SiteShell
+  title="Usecases"
+  description="Practical type-tune workflows for shared types, path aliases, barrels, and generated files."
+  withSidebar
+>
+  <article class="prose">
+    <PageHeader
+      eyebrow="Usage · Practical cases"
+      title="Usecases"
+      lead="Choose the smallest safe workflow for the declaration you need to move."
+    />
+
+    <div class="card-grid usecases content-section">
+      <section class="info-card pixel-frame">
+        <h2>A feature type became shared</h2>
+        <p>Use the full scan → plan → dry-run → apply workflow when several files now depend on it.</p>
+      </section>
+      <section class="info-card pixel-frame">
+        <h2>Move one known symbol</h2>
+        <p>Use <code>extract</code> when the declaration and destination are already clear.</p>
+      </section>
+      <section class="info-card pixel-frame">
+        <h2>Preserve path aliases</h2>
+        <p>Aliases are derived from TypeScript <code>baseUrl</code> and <code>paths</code>.</p>
+      </section>
+      <section class="info-card pixel-frame">
+        <h2>Keep simple barrels working</h2>
+        <p>Existing simple index imports can remain while the barrel re-export is updated.</p>
+      </section>
+      <section class="info-card pixel-frame">
+        <h2>Skip generated sources</h2>
+        <p>Generated files are excluded by default. Include them only when the move is intentional.</p>
+      </section>
+      <section class="info-card pixel-frame">
+        <h2>Annotate risky candidates</h2>
+        <p>Optional AI review adds notes to the plan without affecting deterministic rewrite logic.</p>
+      </section>
+    </div>
+
+    <section class="content-section">
+      <Heading>Extract one symbol</Heading>
+      <CodeBlock code={`type-tune extract OrderSummary \\
+  --from src/features/order/schema.ts \\
+  --to src/features/order/types/order.ts \\
+  --dry-run`} />
+    </section>
+  </article>
+</SiteShell>
+
+<style>
+  .usecases {
+    max-width: none;
+  }
+</style>

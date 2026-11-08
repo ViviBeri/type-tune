@@ -1,0 +1,8 @@
+{
+  "name": "type-tune-cli-module-suffix-project",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

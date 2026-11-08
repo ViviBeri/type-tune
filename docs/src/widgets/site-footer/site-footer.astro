@@ -1,0 +1,130 @@
+---
+import { resourceNavigation } from "../../shared/config/navigation.js";
+
+interface Props {
+  /** Whether the footer is rendered on the home page. */
+  isHome: boolean;
+}
+
+const { isHome } = Astro.props;
+---
+
+<footer id="site-footer" class:list={["site-footer", { "site-footer--home": isHome }]}>
+  <div class="site-footer__inner">
+    <span class="site-footer__credit">
+      <a class="site-footer__author link-underline" href="https://github.com/nyaomaru" target="_blank" rel="noreferrer">
+        <img
+          class="site-footer__author-mark"
+          src="/parts/nyaomaru_favicon.png"
+          width="20"
+          height="20"
+          alt="nyaomaru"
+        />
+      </a>
+    </span>
+    <img
+      class="site-footer__animation"
+      src="/animation/eat-fish.gif"
+      width="1200"
+      height="600"
+      alt="A crab follows a fish"
+    />
+    <nav class="site-footer__links" aria-label="Project resources">
+      {resourceNavigation.map((item) => (
+        <a class="link-underline" href={item.href} target="_blank" rel="noreferrer">{item.label}</a>
+      ))}
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 0;
+    background: var(--background);
+  }
+
+  .site-footer__inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    width: min(100% - 6rem, 86rem);
+    min-height: 10rem;
+    padding-top: 2rem;
+    margin-inline: auto;
+    color: var(--primary);
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .site-footer--home .site-footer__inner {
+    width: min(70%, 86rem);
+    font-size: 14px;
+  }
+
+  .site-footer__animation {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    width: 16rem;
+    height: auto;
+    transform: translateX(-50%);
+  }
+
+  .site-footer__author,
+  .site-footer__links a {
+    display: inline-block;
+  }
+
+  .site-footer__author {
+    vertical-align: middle;
+    line-height: 0;
+  }
+
+  .site-footer__author-mark {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    image-rendering: pixelated;
+  }
+
+  @media (min-width: 801px) and (max-width: 1100px) {
+    .site-footer__inner {
+      padding-top: 9rem;
+    }
+    .site-footer__animation {
+      top: 0;
+      bottom: auto;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .site-footer__inner {
+      width: calc(100% - 2.5rem);
+      min-height: 12rem;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25rem;
+      padding-block: 7rem 1.5rem;
+    }
+
+    .site-footer--home .site-footer__inner {
+      width: calc(100% - 2rem);
+      font-size: 11px;
+    }
+
+    .site-footer__animation {
+      top: 0;
+      bottom: auto;
+      width: 12rem;
+    }
+  }
+</style>
