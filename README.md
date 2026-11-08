@@ -8,7 +8,6 @@
   <a href="https://github.com/necoz-oss/type-tune/actions/workflows/test.yml"><img src="https://github.com/necoz-oss/type-tune/actions/workflows/test.yml/badge.svg" alt="Test" /></a>
   <a href="https://github.com/necoz-oss/type-tune/actions/workflows/docs.yml"><img src="https://github.com/necoz-oss/type-tune/actions/workflows/docs.yml/badge.svg" alt="Docs" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
-  <img src="https://img.shields.io/badge/status-pre--release-orange.svg" alt="Pre-release" />
 </p>
 
 <h3 align="center">Give shared TypeScript types a better home. 😸</h3>
@@ -17,8 +16,6 @@
 **type-tune** is a Rust-powered CLI that finds shared TypeScript `type` aliases and `interface` declarations and helps move them without manually chasing imports.
 
 It creates a reviewable plan, updates supported type imports and re-exports, and validates the rewrite with TypeScript. **You decide what moves and where.**
-
-> **Pre-release:** The npm packages are not published yet. Commands using `npx` below describe the intended workflow. To try it now, [build from source](#development).
 
 ## Why type-tune?
 
@@ -103,15 +100,13 @@ That helps preserve imports through the original module, including unscanned con
 
 ## Installation
 
-After the first npm release:
-
 ```bash
 npx type-tune scan --project tsconfig.json
 # or
 pnpm add -D type-tune
 ```
 
-The npm launcher requires **Node.js 22+** and selects the platform-specific Rust binary. Planned targets are macOS arm64/x64, Linux x64 GNU/musl, and Windows x64, subject to release verification.
+The npm launcher requires **Node.js 22+** and selects a platform-specific Rust binary for macOS arm64/x64, Linux x64 GNU/musl, or Windows x64.
 
 ## Scope & safety
 
