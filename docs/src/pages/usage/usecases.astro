@@ -1,8 +1,10 @@
 ---
 import SiteShell from "../../app/providers/site-shell.astro";
+import Callout from "../../shared/ui/callout.astro";
 import CodeBlock from "../../shared/ui/code-block.astro";
 import Heading from "../../shared/ui/heading.astro";
 import PageHeader from "../../shared/ui/page-header.astro";
+import TextLink from "../../shared/ui/text-link.astro";
 ---
 
 <SiteShell
@@ -20,7 +22,7 @@ import PageHeader from "../../shared/ui/page-header.astro";
     <div class="card-grid usecases content-section">
       <section class="info-card pixel-frame">
         <h2>A feature type became shared</h2>
-        <p>Use the full scan → plan → dry-run → apply workflow when several files now depend on it.</p>
+        <p>Use scan, plan, review, dry-run, and apply when several files now depend on it.</p>
       </section>
       <section class="info-card pixel-frame">
         <h2>Move one known symbol</h2>
@@ -28,11 +30,11 @@ import PageHeader from "../../shared/ui/page-header.astro";
       </section>
       <section class="info-card pixel-frame">
         <h2>Preserve path aliases</h2>
-        <p>Aliases are derived from TypeScript <code>baseUrl</code> and <code>paths</code>.</p>
+        <p>Existing <code>baseUrl</code> and <code>paths</code> aliases are kept when they still reach the destination.</p>
       </section>
       <section class="info-card pixel-frame">
         <h2>Keep simple barrels working</h2>
-        <p>Existing simple index imports can remain while the barrel re-export is updated.</p>
+        <p>A simple type re-export can be updated. A riskier barrel keeps the original compatibility re-export.</p>
       </section>
       <section class="info-card pixel-frame">
         <h2>Skip generated sources</h2>
@@ -46,10 +48,47 @@ import PageHeader from "../../shared/ui/page-header.astro";
 
     <section class="content-section">
       <Heading>Extract one symbol</Heading>
-      <CodeBlock code={`type-tune extract OrderSummary \\
+      <p>
+        <code>extract</code> moves one exported type or interface even when it has fewer referrers
+        than <code>scan</code> would list. The symbol name comes first. <code>--from</code> is the
+        file that declares it. Omit <code>--to</code> to use <code>--placement-style</code>, which
+        defaults to <code>collocation</code>.
+      </p>
+      <CodeBlock code={`pnpm exec type-tune extract OrderSummary \\
   --from src/features/order/schema.ts \\
   --to src/features/order/types/order.ts \\
+  --project tsconfig.json \\
   --dry-run`} />
+      <p>
+        The dry run writes the move, runs <code>tsc --noEmit --project</code>, and restores the
+        files when that finishes normally. Repeat the command without <code>--dry-run</code> to
+        keep it. The destination must be a new project-relative TypeScript source file and must
+        differ from <code>--from</code>.
+      </p>
+      <Callout>
+        After npm install, the same command is <code>npx type-tune extract OrderSummary --from ...</code>.
+        The full batch workflow is in <TextLink href="/usage/workflow">Workflow</TextLink>.
+      </Callout>
+    </section>
+
+    <section class="content-section">
+      <Heading>Path aliases and barrels</Heading>
+      <p>
+        type-tune reads <code>compilerOptions.baseUrl</code> and <code>compilerOptions.paths</code>.
+        When an existing alias still points at the new file, rewritten imports keep that alias.
+        Otherwise the import becomes a project-relative specifier.
+      </p>
+      <p>
+        A named type re-export through a simple barrel can be rewritten to the new module. When
+        that edit would be unsafe, including a mixed value re-export or a value wildcard while the
+        source still has other code, the barrel stays unchanged and the original module keeps a
+        type-only compatibility re-export.
+      </p>
+      <p>
+        That re-export lets unscanned Vue, Svelte, Astro, JavaScript, and external consumers keep
+        importing the old path. It does not typecheck those consumers. Generated files stay out of
+        the scan unless you pass <code>--include-generated</code>.
+      </p>
     </section>
   </article>
 </SiteShell>

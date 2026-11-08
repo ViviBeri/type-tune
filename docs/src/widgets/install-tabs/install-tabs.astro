@@ -7,7 +7,14 @@ import HomeArt from "../../shared/ui/home-art.astro";
 <section class="install-section" id="install">
   <div class="install-section__copy">
     <Heading>Install</Heading>
-    <p>Install type-tune as a development dependency, or try a one-off scan with <code>npx type-tune scan --project tsconfig.json</code>.</p>
+    <p>
+      Add type-tune to a project that uses <strong>Node.js 22+</strong>. A one-off scan is
+      <code>npx type-tune scan --project tsconfig.json</code>. After a local install, run
+      <code>pnpm exec type-tune</code> or <code>npx type-tune</code>.
+    </p>
+    <p>
+      <a class="link-underline" href="/usage/getting-started">See supported platforms and the first scan <span aria-hidden="true">→</span></a>
+    </p>
   </div>
   <CodeTabs commands={installCommands} decoration="dust" />
   <div class="install-section__dust" aria-hidden="true">

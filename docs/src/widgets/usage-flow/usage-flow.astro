@@ -3,9 +3,9 @@ import CodeBlock from "../../shared/ui/code-block.astro";
 import Heading from "../../shared/ui/heading.astro";
 
 const steps = [
-  { label: "01 · Scan", code: "type-tune scan --project tsconfig.json" },
-  { label: "02 · Plan", code: "type-tune plan \\\n  --project tsconfig.json \\\n  --out .type-tune/plan.json \\\n  --markdown .type-tune/plan.md" },
-  { label: "03 · Apply", code: "type-tune apply \\\n  --plan .type-tune/plan.json \\\n  --markdown .type-tune/plan.md" },
+  { label: "01 · Scan", code: "pnpm exec type-tune scan --project tsconfig.json" },
+  { label: "02 · Plan", code: "pnpm exec type-tune plan \\\n  --project tsconfig.json \\\n  --out .type-tune/plan.json \\\n  --markdown .type-tune/plan.md" },
+  { label: "03 · Apply", code: "pnpm exec type-tune apply \\\n  --plan .type-tune/plan.json \\\n  --markdown .type-tune/plan.md" },
 ];
 ---
 

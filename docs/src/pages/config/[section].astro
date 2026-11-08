@@ -7,6 +7,7 @@ import Callout from "../../shared/ui/callout.astro";
 import CodeBlock from "../../shared/ui/code-block.astro";
 import Heading from "../../shared/ui/heading.astro";
 import PageHeader from "../../shared/ui/page-header.astro";
+import TextLink from "../../shared/ui/text-link.astro";
 import ConfigTable from "../../widgets/config-table/config-table.astro";
 
 interface Props {
@@ -22,6 +23,8 @@ export const getStaticPaths = (() =>
 const { section } = Astro.props;
 const description = `Reference for type-tune ${section.title}, including accepted values and defaults.`;
 const showsSharedNotes = section.id === "shared-options";
+const showsPlanNotes = section.id === "plan-options";
+const showsApplyNotes = section.id === "apply-options";
 const showsAiReviewNotes = section.id === "ai-review-options";
 ---
 
@@ -35,16 +38,38 @@ const showsAiReviewNotes = section.id === "ai-review-options";
 
     {showsSharedNotes && (
       <Callout>
-        Generated files and declarations already under a <code>types</code> directory are excluded by
+        Scan reads <code>.ts</code> and <code>.tsx</code> files from the selected
+        <code>tsconfig.json</code>. Generated paths and declarations already under a
+        <code>types</code> directory, or in a file named <code>types.ts</code>, are excluded by
         default. Opt in only when those sources should participate in the move.
+      </Callout>
+    )}
+
+    {showsPlanNotes && (
+      <Callout>
+        Leave <code>plan.json</code> unchanged. <code>plan.md</code> is the review surface for
+        <code>[apply]</code> or <code>[ignore]</code> and for an edited <code>to:</code> path. The
+        <TextLink href="/usage/workflow">workflow guide</TextLink> explains the destination rules.
+      </Callout>
+    )}
+
+    {showsApplyNotes && (
+      <Callout>
+        Apply requires <code>--markdown</code> or the explicit <code>--accept-unreviewed</code> flag.
+        With Markdown, <code>[apply]</code> / <code>[ignore]</code> and any edited <code>to:</code>
+        path come from <code>plan.md</code>. Without Markdown, <code>--accept-unreviewed</code> uses
+        the statuses already stored in <code>plan.json</code>.
       </Callout>
     )}
 
     {showsAiReviewNotes && (
       <Callout>
-        AI review can send source context to the configured provider. Built-in redaction masks
-        common secret patterns on a best-effort basis, but it cannot guarantee that all sensitive
-        data is removed. Inspect the exact request before sending it to an external provider.
+        AI review is optional and never rewrites source. <code>--ai-dry-run</code> prints or saves
+        the request without contacting a provider. A real OpenAI, OpenAI-compatible, or Anthropic
+        review sends the selected context to that provider. Ollama defaults to
+        <code>http://127.0.0.1:11434/api/chat</code>. The mock provider reads
+        <code>--ai-response-file</code> locally. Redaction masks common secret assignments on a
+        best-effort basis and does not guarantee that sensitive data is removed.
       </Callout>
     )}
 
@@ -59,9 +84,10 @@ const showsAiReviewNotes = section.id === "ai-review-options";
           destination, rewritten imports keep that style. Otherwise, a project-relative import is
           used.
         </p>
-        <CodeBlock code={`type-tune extract OrderSummary \\
+        <CodeBlock code={`pnpm exec type-tune extract OrderSummary \\
   --from src/features/order/schema.ts \\
   --to src/features/order/types/order.ts \\
+  --project tsconfig.json \\
   --dry-run`} />
       </section>
     )}
@@ -73,7 +99,7 @@ const showsAiReviewNotes = section.id === "ai-review-options";
           Use a dry run to write the provider request without making a network call. Review the JSON
           and remove source that contains secrets or other data the provider must not receive.
         </p>
-        <CodeBlock code={`type-tune plan \\
+        <CodeBlock code={`pnpm exec type-tune plan \\
   --project tsconfig.json \\
   --ai-review \\
   --ai-dry-run \\
