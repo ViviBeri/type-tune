@@ -1,0 +1,11 @@
+packages:
+  - docs
+  - packages/*
+
+linkWorkspacePackages: true
+
+allowBuilds:
+  esbuild: true
+  lefthook: true
+  sharp: true
+verifyDepsBeforeRun: false

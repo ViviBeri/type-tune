@@ -1,0 +1,62 @@
+---
+import Heading from "./heading.astro";
+
+interface Props {
+  /** Short category shown above the page title. */
+  eyebrow: string;
+  /** Visible page title. */
+  title: string;
+  /** Introductory page summary. */
+  lead: string;
+  /** Illustration shown between the title and the lead. */
+  art?: {
+    src: string;
+    alt: string;
+  };
+}
+
+const { eyebrow, title, lead, art } = Astro.props;
+---
+
+<header class="page-header prose">
+  <p class="page-header__eyebrow">{eyebrow}</p>
+  <Heading level={1}>{title}</Heading>
+  {
+    art && (
+      <img class="page-header__art" src={art.src} width="1600" height="900" alt={art.alt} />
+    )
+  }
+  <p class="page-header__lead">{lead}</p>
+</header>
+
+<style>
+  .page-header {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header__eyebrow {
+    display: inline-block;
+    margin: 0 0 1rem;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .page-header__art {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 1.5rem;
+  }
+
+  .page-header__lead {
+    max-width: 44rem;
+    margin: 1.25rem 0 0;
+    color: var(--primary);
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    line-height: 1.75;
+  }
+</style>

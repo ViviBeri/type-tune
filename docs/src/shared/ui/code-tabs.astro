@@ -1,0 +1,293 @@
+---
+import HomeArt from "./home-art.astro";
+import WavyUnderline from "./wavy-underline.astro";
+
+interface Props {
+  /** Labeled commands shown in the tabs. */
+  commands: {
+    /** Tab label. */
+    manager: string;
+    /** Command copied to the clipboard. */
+    command: string;
+  }[];
+  /** Accessible name for this group of commands. */
+  label?: string;
+  /** Illustration above the command panel. */
+  decoration?: "dust" | "logo";
+  /** Preserves line breaks and uses scrollable monospace code for documentation. */
+  multiline?: boolean;
+  /** Language class attached to multiline code. */
+  language?: string;
+  /** Whether the active panel offers a copy button. */
+  copy?: boolean;
+}
+
+const { commands, decoration, label = "Package manager", multiline = false, language = "shell", copy = true } = Astro.props;
+const tabsId = `tabs-${Math.random().toString(36).slice(2)}`;
+const hasMultipleTabs = commands.length > 1;
+---
+
+<div class:list={["code-tabs", { "code-tabs--multiline": multiline }]} data-code-tabs>
+  <canvas class="code-tabs__outline" aria-hidden="true"></canvas>
+  {decoration === "dust" && <span class="code-tabs__dust" aria-hidden="true">
+    <HomeArt name="dust-01" width={92} height={81} mobileWidth={38} mobileHeight={34} />
+  </span>}
+  {decoration === "logo" && (
+    <img
+      class="code-tabs__logo"
+      src="/type-tune-logo.png"
+      width="2761"
+      height="1227"
+      alt=""
+    />
+  )}
+  <div class="code-tabs__list" role={hasMultipleTabs ? "tablist" : undefined} aria-label={hasMultipleTabs ? label : undefined} data-code-tabs-heading>
+    {commands.map(({ manager }, index) => (
+      hasMultipleTabs ? <button
+        class="code-tabs__tab"
+        type="button"
+        role="tab"
+        id={`${tabsId}-${index}-tab`}
+        aria-controls={`${tabsId}-${index}-panel`}
+        aria-selected={index === 0 ? "true" : "false"}
+        tabindex={index === 0 ? 0 : -1}
+      >
+        {manager}
+        <WavyUnderline class="code-tabs__underline" variant={index} />
+      </button>
+      : <span class="code-tabs__tab code-tabs__tab--static" id={`${tabsId}-${index}-tab`}>
+        {manager}
+        <WavyUnderline class="code-tabs__underline" variant={index} />
+      </span>
+    ))}
+  </div>
+  {commands.map(({ manager, command }, index) => (
+    <div
+      class="code-tabs__panel"
+      role={hasMultipleTabs ? "tabpanel" : "region"}
+      id={`${tabsId}-${index}-panel`}
+      aria-labelledby={`${tabsId}-${index}-tab`}
+      hidden={index !== 0}
+    >
+      {multiline ? (
+        <pre tabindex="0" aria-label={`${manager} code`}><code class={`language-${language}`}>{command}</code></pre>
+      ) : <code>{command}</code>}
+      {copy && <button class="code-tabs__copy" type="button" data-copy-value={command} aria-live="polite">
+        <svg class="code-tabs__copy-outline" viewBox="0 0 64 32" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M12 3.5 Q20 2 29 3.1 T48 2.7 Q56 2.2 59 8.3 L61 16.4 Q61.7 23.5 54 27.5 Q48 30 38 28.8 L23 29.5 Q15 30.2 8 27.4 Q2 24.4 3 17.6 L4.7 9.2 Q5.5 3.1 12 3.5 Z" />
+        </svg>
+        <span data-copy-label>Copy</span>
+      </button>}
+    </div>
+  ))}
+</div>
+
+<script>
+  import { setupCodeTabs } from "../../features/code-tabs/code-tabs.js";
+
+  setupCodeTabs();
+</script>
+
+<style>
+  .code-tabs {
+    position: relative;
+    min-width: 0;
+    padding: 0.35rem;
+    background: var(--background);
+  }
+
+  .code-tabs__outline {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .code-tabs__list,
+  .code-tabs__panel {
+    position: relative;
+    z-index: 1;
+  }
+
+  .code-tabs__list {
+    display: flex;
+    gap: clamp(0.2rem, 2vw, 1.2rem);
+    padding: 0.55rem 0.8rem 0.7rem;
+  }
+
+  .code-tabs__tab {
+    position: relative;
+    padding: 0.25rem 0.2rem calc(0.25rem + 1px);
+    border: 0;
+    background: var(--background);
+    color: var(--primary);
+    cursor: pointer;
+    font: inherit;
+    font-size: 1rem;
+  }
+
+  .code-tabs__tab--static {
+    cursor: default;
+  }
+
+  .code-tabs__list :global(.code-tabs__underline) {
+    opacity: 0;
+  }
+
+  .code-tabs__tab--static :global(.code-tabs__underline),
+  .code-tabs__tab:is([aria-selected="true"], :hover, :focus-visible) :global(.code-tabs__underline) {
+    opacity: 1;
+  }
+
+  .code-tabs__panel {
+    min-height: 4rem;
+    padding: 1rem 5rem 1rem 1rem;
+  }
+
+  .code-tabs__panel code {
+    color: var(--code-foreground);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+
+  .code-tabs__copy {
+    position: absolute;
+    top: 0.95rem;
+    right: 0.85rem;
+    padding: calc(0.25rem + 1px) calc(0.55rem + 1px);
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.72rem;
+  }
+
+  .code-tabs__copy-outline {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .code-tabs__copy-outline path {
+    fill: var(--background);
+    stroke: var(--secondary);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .code-tabs__copy [data-copy-label] {
+    position: relative;
+  }
+
+  .code-tabs__copy:is(:hover, :focus-visible) {
+    color: var(--primary);
+  }
+
+  .code-tabs__copy:is(:hover, :focus-visible) .code-tabs__copy-outline path {
+    fill: var(--secondary);
+    stroke: var(--secondary);
+  }
+
+  .code-tabs__dust {
+    position: absolute;
+    z-index: 2;
+    top: -2.8rem;
+    right: -1.8rem;
+    pointer-events: none;
+  }
+
+  .code-tabs__logo {
+    position: absolute;
+    z-index: 2;
+    top: -2.3rem;
+    right: 0.8rem;
+    width: 5.5rem;
+    height: auto;
+  }
+
+  @media (max-width: 800px) {
+    .code-tabs__dust {
+      top: -1rem;
+      right: -0.3rem;
+    }
+    .code-tabs__list {
+      gap: 1rem;
+      padding: 0.3rem 0.5rem 0.4rem;
+    }
+    .code-tabs__tab {
+      font-size: 0.65rem;
+    }
+    .code-tabs__panel {
+      min-height: 2.5rem;
+      padding: 0.7rem 3.5rem 0.7rem 0.6rem;
+    }
+    .code-tabs__panel code {
+      font-size: 0.7rem;
+    }
+    .code-tabs__copy {
+      top: 0.5rem;
+      right: 0.6rem;
+      padding: calc(0.1rem + 1px) calc(0.35rem + 1px);
+      font-size: 0.6rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .code-tabs__list {
+      gap: 1rem;
+    }
+
+    .code-tabs__tab {
+      font-size: 0.65rem;
+    }
+
+    .code-tabs__panel {
+      padding-right: 3.5rem;
+    }
+
+    .code-tabs__panel code {
+      font-size: 0.7rem;
+    }
+  }
+
+  .code-tabs--multiline .code-tabs__list {
+    padding: 0.55rem 0.8rem 0.7rem;
+  }
+
+  .code-tabs--multiline .code-tabs__tab {
+    font-size: 0.9rem;
+  }
+
+  .code-tabs--multiline .code-tabs__panel {
+    padding: 1rem 5rem 1.25rem 1rem;
+  }
+
+  .code-tabs--multiline pre {
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  .code-tabs--multiline code {
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    line-height: 1.75;
+    white-space: pre;
+    overflow-wrap: normal;
+  }
+
+  .code-tabs--multiline .code-tabs__copy {
+    top: 0.6rem;
+    right: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.72rem;
+  }
+</style>

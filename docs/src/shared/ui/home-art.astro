@@ -1,0 +1,38 @@
+---
+interface Props {
+  /** Asset name shared by PC and smartphone illustrations. */
+  name: string;
+  /** Desktop width. */
+  width: number;
+  /** Desktop height. */
+  height: number;
+  /** Smartphone width. */
+  mobileWidth: number;
+  /** Smartphone height. */
+  mobileHeight: number;
+  /** Accessible description; empty for decorative illustrations. */
+  alt?: string;
+}
+const { name, width, height, mobileWidth, mobileHeight, alt = "" } = Astro.props;
+---
+<picture style={`--art-width: ${width}px; --art-mobile-width: ${mobileWidth}px`}>
+  <source media="(max-width: 800px)" srcset={`/parts/type-tune-smartphone-${name}.png`} width={mobileWidth} height={mobileHeight} />
+  <img src={`/parts/type-tune-pc-${name}.png`} width={width} height={height} alt={alt} />
+</picture>
+<style>
+  picture {
+    display: block;
+    width: var(--art-width);
+    max-width: 100%;
+  }
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  @media (max-width: 800px) {
+    picture {
+      width: var(--art-mobile-width);
+    }
+  }
+</style>

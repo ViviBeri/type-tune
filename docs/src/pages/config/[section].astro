@@ -1,0 +1,98 @@
+---
+import type { GetStaticPaths } from "astro";
+import type { CliOptionSection } from "../../entities/cli-option/model.js";
+import SiteShell from "../../app/providers/site-shell.astro";
+import { cliOptionSections } from "../../shared/config/cli-options.js";
+import Callout from "../../shared/ui/callout.astro";
+import CodeBlock from "../../shared/ui/code-block.astro";
+import Heading from "../../shared/ui/heading.astro";
+import PageHeader from "../../shared/ui/page-header.astro";
+import ConfigTable from "../../widgets/config-table/config-table.astro";
+
+interface Props {
+  section: CliOptionSection;
+}
+
+export const getStaticPaths = (() =>
+  cliOptionSections.map((section) => ({
+    params: { section: section.id },
+    props: { section },
+  }))) satisfies GetStaticPaths;
+
+const { section } = Astro.props;
+const description = `Reference for type-tune ${section.title}, including accepted values and defaults.`;
+const showsSharedNotes = section.id === "shared-options";
+const showsAiReviewNotes = section.id === "ai-review-options";
+---
+
+<SiteShell title={section.title} description={description} withSidebar>
+  <article class="config-page">
+    <PageHeader
+      eyebrow="Config"
+      title={section.title}
+      lead={section.description ?? "Accepted command options, value formats, and resolved defaults."}
+    />
+
+    {showsSharedNotes && (
+      <Callout>
+        Generated files and declarations already under a <code>types</code> directory are excluded by
+        default. Opt in only when those sources should participate in the move.
+      </Callout>
+    )}
+
+    {showsAiReviewNotes && (
+      <Callout>
+        AI review can send source context to the configured provider. Built-in redaction masks
+        common secret patterns on a best-effort basis, but it cannot guarantee that all sensitive
+        data is removed. Inspect the exact request before sending it to an external provider.
+      </Callout>
+    )}
+
+    <ConfigTable section={section} showHeading={false} />
+
+    {showsSharedNotes && (
+      <section class="content-section prose">
+        <Heading>Path alias behavior</Heading>
+        <p>
+          type-tune reads <code>compilerOptions.baseUrl</code> and <code>compilerOptions.paths</code>
+          from the loaded TypeScript project. When an existing alias can still address the
+          destination, rewritten imports keep that style. Otherwise, a project-relative import is
+          used.
+        </p>
+        <CodeBlock code={`type-tune extract OrderSummary \\
+  --from src/features/order/schema.ts \\
+  --to src/features/order/types/order.ts \\
+  --dry-run`} />
+      </section>
+    )}
+
+    {showsAiReviewNotes && (
+      <section class="content-section prose">
+        <Heading>Inspect the request before sending</Heading>
+        <p>
+          Use a dry run to write the provider request without making a network call. Review the JSON
+          and remove source that contains secrets or other data the provider must not receive.
+        </p>
+        <CodeBlock code={`type-tune plan \\
+  --project tsconfig.json \\
+  --ai-review \\
+  --ai-dry-run \\
+  --ai-request-out .type-tune/ai-request.json`} />
+      </section>
+    )}
+  </article>
+</SiteShell>
+
+<style>
+  .config-page {
+    max-width: 62rem;
+  }
+
+  .config-page > .callout {
+    margin-top: 2rem;
+  }
+
+  .content-section > p {
+    color: var(--muted);
+  }
+</style>

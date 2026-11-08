@@ -1,0 +1,40 @@
+---
+interface Props {
+  /** Selects one of the uneven strokes shared by navigation and tabs. */
+  variant?: number;
+  /** Additional class for controlling underline visibility. */
+  class?: string;
+}
+
+const { variant = 0, class: className } = Astro.props;
+const strokes = [
+  "M1 2.1 Q5 1.6 9 2.3 T17 2.6 Q22 2.1 27 3.2 T39 4.1",
+  "M1 3.6 Q6 2.4 11 2.9 T21 2.3 Q27 2.8 31 2.4 T39 3.1",
+  "M1 2.4 Q7 3.1 12 2.5 T22 3.2 Q27 3.8 32 3.2 T39 3.8",
+];
+---
+
+<svg class:list={["wavy-underline", className]} viewBox="0 0 40 6" preserveAspectRatio="none" aria-hidden="true">
+  <path d={strokes[variant % strokes.length]} />
+</svg>
+
+<style>
+  .wavy-underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+</style>

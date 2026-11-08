@@ -1,0 +1,36 @@
+---
+import { cn } from "../lib/cn.js";
+
+interface Props {
+  href: string;
+  external?: boolean;
+  class?: string;
+}
+
+const { href, external = false, class: className } = Astro.props;
+---
+
+<a
+  class={cn("text-link link-underline", className)}
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noreferrer" : undefined}
+>
+  <slot />
+  {external && <span aria-hidden="true">↗</span>}
+</a>
+
+<style>
+  .text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--accent);
+    font-weight: 620;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.24em;
+    transition: color 160ms ease, text-decoration-color 160ms ease;
+  }
+
+</style>

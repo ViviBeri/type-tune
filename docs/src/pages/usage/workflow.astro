@@ -1,0 +1,123 @@
+---
+import SiteShell from "../../app/providers/site-shell.astro";
+import CodeBlock from "../../shared/ui/code-block.astro";
+import PageHeader from "../../shared/ui/page-header.astro";
+---
+
+<SiteShell
+  title="Workflow"
+  description="Follow the reviewable type-tune scan, plan, dry-run, and apply workflow."
+  withSidebar
+>
+  <article class="prose">
+    <PageHeader
+      eyebrow="Usage · Six steps"
+      title="The workflow"
+      lead="Scan first, review a stable plan, preview the rewrite, and only then keep file changes."
+    />
+
+    <ol class="workflow-list content-section">
+      <li>
+        <strong>Scan candidates.</strong>
+        <p>Inspect shared declarations, referrer counts, destinations, and omission reasons.</p>
+        <CodeBlock code="type-tune scan --project tsconfig.json --verbose --explain" />
+      </li>
+      <li>
+        <strong>Create a plan.</strong>
+        <CodeBlock code={`type-tune plan \\
+  --project tsconfig.json \\
+  --out .type-tune/plan.json \\
+  --markdown .type-tune/plan.md`} />
+      </li>
+      <li>
+        <strong>Review <code>plan.md</code>.</strong>
+        <p>
+          Candidates start as <code>ignore</code>. Use the interactive review command, or edit the
+          Markdown directly, to set every approved candidate to <code>apply</code> while keeping every
+          candidate ID in the file. You can edit a candidate's <code>to:</code> path to select a
+          different project-relative TypeScript destination. Candidates from one source must share
+          a destination, and the destination file must not already exist.
+        </p>
+        <CodeBlock code="type-tune review --markdown .type-tune/plan.md" />
+        <CodeBlock language="markdown" label="plan.md" code={'- [apply] abc123def456 `OrderSummary`\n  - kind: `typeAlias`\n  - from: `src/features/order/schema.ts`\n  - to: `src/domains/orders/types/order-summary.ts`'} />
+      </li>
+      <li>
+        <strong>Preview the real rewrite.</strong>
+        <CodeBlock code={`type-tune apply \\
+  --plan .type-tune/plan.json \\
+  --markdown .type-tune/plan.md \\
+  --dry-run`} />
+      </li>
+      <li>
+        <strong>Apply.</strong>
+        <CodeBlock code={`type-tune apply \\
+  --plan .type-tune/plan.json \\
+  --markdown .type-tune/plan.md`} />
+      </li>
+      <li>
+        <strong>Review and commit.</strong>
+        <p>Inspect the normal source diff and commit it with the rest of your project changes.</p>
+      </li>
+    </ol>
+    <p>
+      <code>plan.md</code> is the human review surface. <code>plan.json</code> carries structured
+      candidate metadata and resolved options used by apply-time validation. Applying without
+      Markdown requires the explicit <code>--accept-unreviewed</code> flag.
+    </p>
+  </article>
+</SiteShell>
+
+<style>
+  .workflow-list {
+    margin-bottom: 2rem;
+    padding: 0;
+    counter-reset: workflow;
+    list-style: none;
+  }
+
+  .workflow-list > li {
+    position: relative;
+    padding: 0 0 3rem 3.5rem;
+    counter-increment: workflow;
+  }
+
+  .workflow-list > li > strong {
+    font-size: 1.25rem;
+    font-weight: 650;
+  }
+
+  .workflow-list > li::before {
+    content: counter(workflow, decimal-leading-zero);
+    position: absolute;
+    top: 0.05rem;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    color: var(--primary);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .workflow-list > li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 2.35rem;
+    bottom: 0.45rem;
+    left: 0.9rem;
+    width: 1px;
+    background: var(--secondary);
+  }
+
+  .workflow-list p {
+    margin: 0.4rem 0 0;
+  }
+
+  @media (max-width: 800px) {
+    .workflow-list > li {
+      padding-left: 2.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+import CodeBlock from "../../shared/ui/code-block.astro";
+import Heading from "../../shared/ui/heading.astro";
+
+const steps = [
+  { label: "01 · Scan", code: "type-tune scan --project tsconfig.json" },
+  { label: "02 · Plan", code: "type-tune plan \\\n  --project tsconfig.json \\\n  --out .type-tune/plan.json \\\n  --markdown .type-tune/plan.md" },
+  { label: "03 · Apply", code: "type-tune apply \\\n  --plan .type-tune/plan.json \\\n  --markdown .type-tune/plan.md" },
+];
+---
+
+<section class="usage-flow">
+  <div class="usage-flow__intro">
+    <Heading>Workflow</Heading>
+    <p class="usage-flow__tagline">Review first. Rewrite second.</p>
+    <p>Every move follows the same small, inspectable path. The dry run uses the real rewrite and rolls it back.</p>
+  </div>
+  <ol>
+    {steps.map((step) => (
+      <li>
+        <span>{step.label}</span>
+        <CodeBlock code={step.code} label="shell" />
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .usage-flow {
+    display: grid;
+    grid-template-columns: minmax(15rem, 0.65fr) minmax(0, 1.35fr);
+    gap: clamp(3rem, 8vw, 7rem);
+    padding: 6rem clamp(1rem, 4vw, 3rem);
+    border-inline: 4px solid var(--secondary);
+  }
+
+  .usage-flow__intro {
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+    align-self: start;
+  }
+
+  .usage-flow__intro p {
+    margin: 1rem 0;
+    color: var(--primary);
+  }
+
+  .usage-flow__intro .usage-flow__tagline {
+    color: var(--primary);
+    font-size: 1.1rem;
+    font-weight: 650;
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li + li {
+    margin-top: 3rem;
+  }
+
+  li > span {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: var(--primary);
+    color: var(--background);
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 800px) {
+    .usage-flow {
+      grid-template-columns: 1fr;
+    }
+
+    .usage-flow__intro {
+      position: static;
+    }
+  }
+</style>

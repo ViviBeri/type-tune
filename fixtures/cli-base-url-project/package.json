@@ -1,0 +1,8 @@
+{
+  "name": "type-tune-cli-base-url-project",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

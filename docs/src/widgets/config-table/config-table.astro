@@ -1,0 +1,96 @@
+---
+import type { CliOptionSection } from "../../entities/cli-option/model.js";
+import Heading from "../../shared/ui/heading.astro";
+
+interface Props {
+  section: CliOptionSection;
+  showHeading?: boolean;
+}
+
+const { section, showHeading = true } = Astro.props;
+---
+
+<section class="config-section content-section" id={section.id}>
+  {showHeading && <Heading>{section.title}</Heading>}
+  {showHeading && section.description && <p>{section.description}</p>}
+  <div class="table-wrap pixel-frame" tabindex="0" role="region" aria-label={`${section.title} options`}>
+    <table>
+      <thead>
+        <tr><th>Option</th><th>Default</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        {section.options.map((option) => (
+          <tr>
+            <td><code>{option.name}{option.value ? ` ${option.value}` : ""}</code></td>
+            <td><code>{option.defaultValue}</code></td>
+            <td>{option.description}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .config-section > p {
+    margin: 0.75rem 0 0;
+    color: var(--muted);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    margin-top: 1.25rem;
+    padding: var(--frame-step-1);
+    --pixel-frame-color: var(--border);
+    --pixel-frame-fill: var(--background);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  th,
+  td {
+    padding: 1.15rem 1.25rem;
+    border-bottom: 1px solid var(--secondary);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  th {
+    background: color-mix(in srgb, var(--primary) 5%, transparent);
+    color: var(--primary);
+    font-size: 0.75rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  td:nth-child(1) {
+    min-width: 12rem;
+  }
+
+  td:nth-child(2) {
+    min-width: 8rem;
+  }
+
+  td:last-child {
+    min-width: 20rem;
+    color: var(--primary);
+  }
+
+  td code {
+    padding: 0;
+    background: transparent;
+    color: var(--primary);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    overflow-wrap: normal;
+  }
+</style>

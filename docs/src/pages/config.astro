@@ -1,0 +1,29 @@
+---
+import SiteShell from "../app/providers/site-shell.astro";
+import { cliOptionSections } from "../shared/config/cli-options.js";
+import PageHeader from "../shared/ui/page-header.astro";
+import PageIndex from "../widgets/page-index/page-index.astro";
+
+const configPages = cliOptionSections.map((section) => ({
+  href: `/config/${section.id}`,
+  title: section.title,
+  description: section.description ?? `${section.options.length} documented options.`,
+  action: "View options",
+}));
+---
+
+<SiteShell
+  title="Config"
+  description="Reference for the Rust-powered type-tune scan, plan, review, apply, extract, and optional AI review options."
+  withSidebar
+>
+  <article class="prose">
+    <PageHeader
+      eyebrow="Reference"
+      title="CLI configuration"
+      art={{ src: "/animation/clean-desk.gif", alt: "A crab cleans a dusty desk" }}
+      lead="Browse command options by scope. Each reference page lists its accepted values and defaults."
+    />
+    <PageIndex label="Configuration sections" items={configPages} capitalizeTitles />
+  </article>
+</SiteShell>

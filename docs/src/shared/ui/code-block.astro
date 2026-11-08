@@ -1,0 +1,27 @@
+---
+import CodeTabs from "./code-tabs.astro";
+
+interface Props {
+  /** Source text displayed and copied without altering its line breaks. */
+  code: string;
+  /** Language of the code example. */
+  language?: string;
+  /** Label shown on the code tab. */
+  label?: string;
+  /** Whether to show the copy button. */
+  copy?: boolean;
+}
+
+const { code, language = "shell", label, copy = true } = Astro.props;
+---
+
+<div class="code-block">
+  <CodeTabs commands={[{ manager: label ?? language, command: code }]} label={`${label ?? language} example`} {language} {copy} multiline />
+</div>
+
+<style>
+  .code-block {
+    min-width: 0;
+    margin-block: 1.25rem;
+  }
+</style>

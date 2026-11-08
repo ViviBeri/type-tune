@@ -1,0 +1,67 @@
+---
+import Heading from "../../shared/ui/heading.astro";
+import HomeArt from "../../shared/ui/home-art.astro";
+---
+<section class="hero">
+  <div class="hero__copy">
+    <Heading level={1}>What is type-tune?</Heading>
+    <p>type-tune moves shared TypeScript types without making you chase every import by hand.</p>
+    <p>The Rust-powered CLI follows three deliberate steps:</p>
+    <div class="hero__steps">
+      <HomeArt name="scan-plan-apply" width={290} height={88} mobileWidth={129} mobileHeight={40} alt="Scan, plan, apply" />
+    </div>
+    <p>Review the plan first; only the moves you approve are applied.</p>
+  </div>
+  <img class="hero__art" src="/animation/conveyor-belt.gif" width="2400" height="1350"
+    alt="A crab sorts types on a conveyor belt" fetchpriority="high" />
+</section>
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: 4rem;
+    padding-block: 8rem 10rem;
+  }
+  .hero__copy {
+    min-width: 0;
+  }
+  .hero__copy p {
+    margin: 1.2rem 0 0;
+  }
+  .hero__copy p + p {
+    margin-top: 0.6rem;
+  }
+  .hero__steps {
+    margin-block: 1.5rem;
+  }
+  .hero__art {
+    display: block;
+    width: 118.75%;
+    width: round(nearest, 118.75%, 2px);
+    max-width: none;
+    height: auto;
+    margin-top: 1rem;
+    margin-left: -4.875%;
+    transform: translateY(8px);
+  }
+  @media (max-width: 800px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+      padding-block: 0 7rem;
+    }
+    .hero__art {
+      grid-row: 1;
+      width: 123.5%;
+      width: round(nearest, 123.5%, 2px);
+      margin-left: -11.75%;
+    }
+    .hero__copy p {
+      margin-top: 1rem;
+    }
+    .hero__steps {
+      margin-block: 1.5rem 1rem;
+    }
+  }
+</style>

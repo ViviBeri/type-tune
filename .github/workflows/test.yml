@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  rust-cli:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Check native formatting
+        run: cargo fmt --check
+
+      - name: Lint native core
+        run: cargo clippy --workspace -- -D warnings
+
+      - name: Test native core
+        run: cargo test --workspace
+
+      - name: Build native binary
+        run: cargo build --release --workspace
+
+      - name: Stage native package for launcher smoke test
+        run: >-
+          node scripts/stage-native-binary.mjs
+          packages/type-tune-linux-x64-gnu
+          target/release/type-tune
+
+      - name: Setup Node for npm package validation
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install Node dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Verify CLI movement fixture
+        run: node scripts/verify-movement-fixture.mjs
+
+      - name: Test release workflow gates without publishing
+        run: node --test scripts/release-workflow.test.mjs
+
+      - name: Check npm launcher package
+        run: node scripts/check-package.mjs

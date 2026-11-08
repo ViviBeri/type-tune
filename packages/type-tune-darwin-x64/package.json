@@ -1,0 +1,16 @@
+{
+  "name": "@type-tune/darwin-x64",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": "https://github.com/necoz-oss/type-tune",
+  "files": [
+    "bin/type-tune",
+    "bin/type-tune.sha256"
+  ],
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ]
+}

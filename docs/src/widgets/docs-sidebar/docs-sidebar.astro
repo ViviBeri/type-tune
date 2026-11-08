@@ -1,0 +1,154 @@
+---
+import { sidebarSections } from "../../shared/config/navigation.js";
+
+interface Props {
+  pathname: string;
+}
+
+const { pathname } = Astro.props;
+---
+
+<aside id="docs-sidebar" class="docs-sidebar">
+  <details open data-docs-navigation>
+    <summary>
+      Contents
+      <svg class="docs-sidebar__toggle" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M4 6 8 10 12 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+    <nav aria-label="Contents">
+      {sidebarSections.map((section) => (
+        <section>
+          <h2>{section.title}</h2>
+          <ul>
+            {section.items.map((item) => (
+              <li>
+                <a href={item.href} aria-current={pathname === item.href ? "page" : undefined}>
+                  <span class:list={{ "link-underline": pathname !== item.href }}>{item.label}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </nav>
+  </details>
+</aside>
+
+<script>
+  const navigation = document.querySelector<HTMLDetailsElement>("[data-docs-navigation]");
+  const mobile = window.matchMedia("(max-width: 800px)");
+  const syncNavigation = () => {
+    if (navigation) navigation.open = !mobile.matches;
+  };
+  syncNavigation();
+  mobile.addEventListener("change", syncNavigation);
+</script>
+
+<style>
+  .docs-sidebar {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+    max-height: calc(100dvh - 4rem);
+    padding-block: 0.35rem;
+    overflow-y: auto;
+    background: var(--background);
+  }
+
+  summary {
+    display: none;
+  }
+
+  section + section {
+    margin-top: 2.75rem;
+  }
+
+  h2 {
+    margin: 0 0 0.55rem;
+    padding-bottom: 0.5rem;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 750;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  ul {
+    display: grid;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: block;
+    padding: 0.45rem 0.85rem;
+    border-left: 1px solid var(--secondary);
+    color: var(--primary);
+    font-size: 0.95rem;
+  }
+
+  a > span {
+    display: inline-block;
+  }
+
+  a:is(:hover, :focus-visible) .link-underline::after {
+    width: 100%;
+  }
+
+  a[aria-current="page"] {
+    border-left-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 8%, transparent);
+    font-weight: 650;
+  }
+
+  @media (max-width: 800px) {
+    .docs-sidebar {
+      position: static;
+      max-height: none;
+      padding: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 44px;
+      padding-block: 0.6rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .docs-sidebar__toggle {
+      display: block;
+      width: 1rem;
+      height: 1rem;
+      flex: none;
+      transition: transform 180ms ease;
+    }
+
+    details[open] .docs-sidebar__toggle {
+      transform: rotate(180deg);
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      padding-block: 1.25rem;
+    }
+
+    section + section {
+      margin-top: 0;
+    }
+  }
+</style>

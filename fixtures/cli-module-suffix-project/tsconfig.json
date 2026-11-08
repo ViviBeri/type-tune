@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "moduleSuffixes": [".native", ""],
+    "strict": true
+  },
+  "include": ["src/**/*.ts"]
+}

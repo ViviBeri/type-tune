@@ -1,0 +1,279 @@
+---
+import { GITHUB_URL } from "../../shared/config/navigation.js";
+import WavyUnderline from "../../shared/ui/wavy-underline.astro";
+
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isCurrentSection = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
+const links = [
+  { label: "Usage", href: "/usage", asset: "usage", dust: "01" },
+  { label: "Config", href: "/config", asset: "config", dust: "01" },
+  { label: "GitHub", href: GITHUB_URL, asset: "github", dust: "02" },
+];
+---
+<header class="home-header">
+  <a class="home-header__logo" href="/" aria-label="type-tune home">
+    <img src="/animation/motion-logo.gif" width="3334" height="2084" alt="" />
+  </a>
+  <nav class="home-header__nav" aria-label="Primary navigation">
+    {links.map(({ label, href, asset, dust }) => (
+      <a class:list={["home-header__link", { "home-header__link--github": asset === "github" }]}
+        href={href} aria-label={label} aria-current={isCurrentSection(href) ? "page" : undefined}
+        target={asset === "github" ? "_blank" : undefined}
+        rel={asset === "github" ? "noreferrer" : undefined}>
+        <span class="home-header__dust" aria-hidden="true">
+          {[1, 2, 3, 4].map((frame) => (
+            <img src={`/parts/type-tune-pc-menu-dust-${dust}-0${frame}.png`}
+              width={dust === "01" ? 86 : 70} height={dust === "01" ? 47 : 46}
+              alt="" style={`--frame: ${frame - 1}`} />
+          ))}
+        </span>
+        {asset === "github" ? (
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M12 .8a11.4 11.4 0 0 0-3.6 22.2c.6.1.8-.2.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.7-1.3-1.7-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.9 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6A11.4 11.4 0 0 0 12 .8Z" />
+          </svg>
+        ) : <span>{label}{isCurrentSection(href) && <WavyUnderline variant={asset === "usage" ? 0 : 1} />}</span>}
+      </a>
+    ))}
+  </nav>
+  <button class="home-header__toggle" type="button" aria-label="Open navigation"
+    aria-haspopup="dialog" aria-controls="home-menu" aria-expanded="false" data-home-menu-toggle>
+    <img src="/parts/type-tune-smartphone-hamburger-menu.png" width="15" height="14" alt="" />
+  </button>
+</header>
+
+<dialog id="home-menu" class="home-menu" aria-label="Primary navigation">
+  <button class="home-menu__close" type="button" aria-label="Close navigation" data-home-menu-close>×</button>
+  <div class="home-menu__board">
+    <img class="home-menu__crab" src="/parts/type-tune-smartphone-menu-crab.png" width="296" height="350" alt="" />
+    <nav class="home-menu__links" aria-label="Mobile navigation">
+      {links.map(({ label, href, asset }) => (
+        <a href={href} aria-label={label} aria-current={isCurrentSection(href) ? "page" : undefined}
+          target={asset === "github" ? "_blank" : undefined}
+          rel={asset === "github" ? "noreferrer" : undefined}>
+          <img src={`/parts/type-tune-smartphone-menu-text-${asset}.png`} alt=""
+            width={asset === "github" ? 104 : 101} height={asset === "github" ? 42 : asset === "usage" ? 37 : 35} />
+        </a>
+      ))}
+    </nav>
+  </div>
+</dialog>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-home-menu-toggle]");
+  const menu = document.querySelector<HTMLDialogElement>("#home-menu");
+  if (toggle && menu) {
+    toggle.addEventListener("click", (event) => {
+      const openedWithPointer = event.detail > 0;
+      toggle.classList.toggle("home-header__toggle--pointer", openedWithPointer);
+      menu.classList.toggle("home-menu--pointer", openedWithPointer);
+      menu.showModal();
+      toggle.setAttribute("aria-expanded", "true");
+      document.body.classList.add("home-menu-open");
+    });
+    menu.addEventListener("pointerdown", () => {
+      toggle.classList.add("home-header__toggle--pointer");
+      menu.classList.add("home-menu--pointer");
+    });
+    window.addEventListener("keydown", () => {
+      toggle.classList.remove("home-header__toggle--pointer");
+      menu.classList.remove("home-menu--pointer");
+    });
+    menu.querySelector("[data-home-menu-close]")?.addEventListener("click", () => menu.close());
+    menu.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => menu.close()));
+    menu.addEventListener("click", (event) => { if (event.target === menu) menu.close(); });
+    menu.addEventListener("close", () => {
+      toggle.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("home-menu-open");
+      toggle.focus({ preventScroll: true });
+    });
+    window.matchMedia("(min-width: 801px)").addEventListener("change", (event) => {
+      if (event.matches && menu.open) menu.close();
+    });
+  }
+</script>
+
+<style>
+  .home-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(100% - 6rem, 116rem);
+    height: 8rem;
+    margin-inline: auto;
+  }
+  .home-header__logo {
+    display: block;
+    width: 161px;
+    aspect-ratio: 3052 / 1545;
+    overflow: hidden;
+  }
+  .home-header__logo img {
+    display: block;
+    width: calc(3334 / 3052 * 100%);
+    max-width: none;
+    height: auto;
+    transform: translate(calc(-134 / 3334 * 100%), calc(-460 / 2084 * 100%));
+  }
+  .home-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .home-header__link {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 86px;
+    height: 47px;
+    font-size: 18px;
+    font-weight: 650;
+  }
+  .home-header__link--github {
+    width: 70px;
+    height: 46px;
+  }
+  .home-header__link > span:not(.home-header__dust),
+  .home-header__link > svg {
+    position: relative;
+    margin-left: 10px;
+    transform: translateY(-4px);
+  }
+  .home-header__link > svg {
+    width: 28px;
+    height: 28px;
+  }
+  .home-header__dust {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .home-header__dust img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+  .home-header__dust img:first-child {
+    opacity: 1;
+  }
+  .home-header__link:not([aria-current="page"]):is(:hover, :focus-visible) .home-header__dust {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .home-header__link:not([aria-current="page"]):is(:hover, :focus-visible) .home-header__dust img {
+      animation: dust-frame 800ms steps(1, end) infinite;
+      animation-delay: calc(var(--frame) * -200ms);
+    }
+  }
+  @keyframes dust-frame {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    25%,
+    99.99% {
+      opacity: 0;
+    }
+  }
+  .home-header__toggle {
+    display: none;
+  }
+  .home-menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 4rem 1.5rem 2rem;
+    border: 0;
+    background: var(--background);
+    color: var(--primary);
+  }
+  .home-menu[open] {
+    display: grid;
+    place-items: center;
+  }
+  .home-menu::backdrop {
+    background: var(--background);
+  }
+  .home-menu__close {
+    position: absolute;
+    top: calc((var(--header-height) - 44px) / 2 - 0.25rem);
+    right: 1rem;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    font-size: 2rem;
+    cursor: pointer;
+  }
+  .home-header__toggle--pointer:focus-visible,
+  .home-menu--pointer .home-menu__close:focus-visible {
+    outline: none;
+  }
+  .home-menu__board {
+    position: relative;
+    width: min(100%, 22rem, 70vh);
+  }
+  .home-menu__crab {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .home-menu__links {
+    position: absolute;
+    inset: 43% 22% 9% 19%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .home-menu__links a {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+  }
+  .home-menu__links img {
+    display: block;
+    width: 70%;
+    height: auto;
+  }
+  .home-menu__links a:hover {
+    transform: rotate(-3deg);
+  }
+  :global(body.home-menu-open) {
+    overflow: hidden;
+  }
+  @media (max-width: 800px) {
+    .home-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      width: 100%;
+      height: 4rem;
+      padding-inline: 1rem;
+      background: var(--background);
+    }
+    .home-header__logo {
+      width: 66px;
+    }
+    .home-header__nav {
+      display: none;
+    }
+    .home-header__toggle {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+  }
+</style>

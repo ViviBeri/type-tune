@@ -1,0 +1,90 @@
+---
+import { GITHUB_URL } from "../../shared/config/navigation.js";
+import HomeArt from "../../shared/ui/home-art.astro";
+
+const links = [
+  { label: "Usage", name: "usage", href: "/usage", hover: "01-copy" },
+  { label: "Config", name: "config", href: "/config", hover: "02" },
+  { label: "GitHub", name: "github", href: GITHUB_URL, hover: "02" },
+];
+---
+<div class="home-signposts">
+  <div class="home-signposts__bucket" aria-hidden="true">
+    <HomeArt name="bucket" width={105} height={110} mobileWidth={42} mobileHeight={44} />
+  </div>
+  <nav aria-label="Explore type-tune">
+    {links.map(({ label, name, href, hover }) => (
+      <a href={href} aria-label={label} target={name === "github" ? "_blank" : undefined} rel={name === "github" ? "noreferrer" : undefined}>
+        <picture>
+          <source media="(max-width: 800px)" srcset={`/parts/type-tune-smartphone-wet-floor-sign-${name}.png`} width="63" height="55" />
+          <img class="home-signposts__normal" src={`/parts/type-tune-pc-wet-floor-sign-${name}-01.png`} width="171" height="159" alt="" />
+        </picture>
+        <img class="home-signposts__hover" src={`/parts/type-tune-pc-wet-floor-sign-${name}-${hover}.png`} width="171" height="159" alt="" />
+      </a>
+    ))}
+  </nav>
+</div>
+<style>
+  .home-signposts {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin: 3rem auto 0;
+    padding-bottom: 6rem;
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+  }
+  a {
+    position: relative;
+    display: block;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  .home-signposts__hover {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+  a:is(:hover, :focus-visible) .home-signposts__normal {
+    opacity: 0;
+  }
+  a:is(:hover, :focus-visible) .home-signposts__hover {
+    opacity: 1;
+  }
+  .home-signposts__bucket {
+    position: absolute;
+    left: -9rem;
+    bottom: 2rem;
+  }
+  @media (max-width: 800px) {
+    .home-signposts {
+      margin-top: 2rem;
+      padding-bottom: 4rem;
+    }
+    nav {
+      gap: 1rem;
+    }
+    a {
+      width: 63px;
+      min-height: 55px;
+    }
+    .home-signposts__hover {
+      display: none;
+    }
+    a:is(:hover, :focus-visible) .home-signposts__normal {
+      opacity: 1;
+      transform: rotate(-5deg);
+    }
+    .home-signposts__bucket {
+      left: -2.5rem;
+      bottom: 2rem;
+    }
+  }
+</style>

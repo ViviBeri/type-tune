@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "strict": true
+  },
+  "files": ["src/app.ts"]
+}

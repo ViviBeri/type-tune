@@ -1,0 +1,41 @@
+---
+import type { DocsPageMetadata } from "../../entities/docs-page/model.js";
+import DocsSidebar from "../../widgets/docs-sidebar/docs-sidebar.astro";
+import SiteFooter from "../../widgets/site-footer/site-footer.astro";
+import SiteHeader from "../../widgets/site-header/site-header.astro";
+import "../styles/global.css";
+
+interface Props extends DocsPageMetadata {
+  withSidebar?: boolean;
+}
+
+const { title, description, withSidebar = false } = Astro.props;
+const pathname = Astro.url.pathname;
+const pageTitle = title === "type-tune" ? title : `${title} · type-tune`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#171917" />
+    <link rel="icon" type="image/png" href="/type-tune-favicon.png" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <SiteHeader />
+    <main class:list={["site-main", { "site-main--home": pathname === "/" }]}>
+      {withSidebar ? (
+        <div class="docs-layout">
+          <DocsSidebar pathname={pathname} />
+          <div class="docs-content"><slot /></div>
+        </div>
+      ) : (
+        <slot />
+      )}
+    </main>
+    <SiteFooter isHome={pathname === "/"} />
+  </body>
+</html>

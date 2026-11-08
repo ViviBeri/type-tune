@@ -1,0 +1,86 @@
+name: Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Select version bump type"
+        required: true
+        default: "patch"
+        type: choice
+        options: [patch, minor, major]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup project
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Generate new version
+        id: version
+        run: |
+          set -euo pipefail
+          pnpm version ${{ inputs.release_type }} --no-git-tag-version
+          node scripts/sync-native-versions.mjs
+          pnpm install --lockfile-only
+          version_no_v=$(node -p "require('./package.json').version")
+          printf 'new_version=%s\n' "$version_no_v" >> "$GITHUB_ENV"
+          printf 'new_tag=v%s\n' "$version_no_v" >> "$GITHUB_ENV"
+
+      - name: Create new branch
+        run: git switch -c "release/${{ env.new_version }}"
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Format
+        run: cargo fmt --all
+
+      - name: Release check
+        run: pnpm publish:check
+
+      - name: Commit and push changes
+        run: |
+          git add package.json pnpm-lock.yaml Cargo.lock crates/*/Cargo.toml packages/*/package.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(release): bump version to ${{ env.new_version }}"
+          else
+            echo "No changes to commit"
+          fi
+          git push -u origin "HEAD:release/${{ env.new_version }}"
+
+      - name: Create Pull Request
+        run: |
+          gh pr create \
+            --base main \
+            --head "release/${{ env.new_version }}" \
+            --title "Release: ${{ env.new_version }}" \
+            --body "Prepare release ${{ env.new_tag }}.
+
+            Checks:
+            - pnpm publish:check
+
+            Changelog:
+            - Run the Changelog workflow with release_tag=HEAD and release_name=${{ env.new_version }}."

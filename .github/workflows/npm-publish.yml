@@ -1,0 +1,176 @@
+name: NPM Publish
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact event commit and release tags
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Verify release tag, commit and synchronized versions
+        run: node scripts/validate-release.mjs
+      - name: Install mise and Rust
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+      - run: mise install rust@stable
+      - name: Setup project
+        uses: ./.github/actions/setup-pnpm
+      - name: Test release gates without publishing
+        run: node --test scripts/release-workflow.test.mjs
+      - name: Run required release checks
+        run: pnpm publish:check
+      - name: Check documentation
+        run: pnpm docs:check && pnpm docs:build
+
+  build-native:
+    needs: preflight
+    name: Build ${{ matrix.package }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            package: type-tune-linux-x64-gnu
+            executable: type-tune
+          - runner: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            package: type-tune-linux-x64-musl
+            executable: type-tune
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+            package: type-tune-darwin-x64
+            executable: type-tune
+          - runner: macos-15
+            target: aarch64-apple-darwin
+            package: type-tune-darwin-arm64
+            executable: type-tune
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            package: type-tune-win32-x64-msvc
+            executable: type-tune.exe
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install musl linker
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: sudo apt-get update && sudo apt-get install --yes musl-tools
+      - name: Build native binary
+        run: cargo build --release --target ${{ matrix.target }} -p type-tune
+      - name: Smoke test native binary
+        shell: bash
+        run: target/${{ matrix.target }}/release/${{ matrix.executable }} --help
+      - name: Stage and verify platform package
+        shell: bash
+        run: |
+          node scripts/stage-native-binary.mjs packages/${{ matrix.package }} target/${{ matrix.target }}/release/${{ matrix.executable }}
+          node scripts/check-native-package.mjs packages/${{ matrix.package }}
+      - name: Smoke test packed npm launcher
+        if: matrix.target != 'x86_64-unknown-linux-musl'
+        run: node scripts/check-package.mjs
+      - name: Pack the verified native package
+        run: node scripts/release-artifacts.mjs create release-artifact ${{ matrix.package }} ${{ matrix.target }} ${{ github.sha }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.package }}
+          path: release-artifact/
+          if-no-files-found: error
+          overwrite: true
+
+  verify-artifacts:
+    needs: [preflight, build-native]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          pattern: type-tune-*
+      - name: Verify all native artifacts before publication
+        run: node scripts/release-artifacts.mjs verify release-artifacts ${{ github.sha }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-native-packages
+          path: release-artifacts/
+          if-no-files-found: error
+          overwrite: true
+
+  publish-native:
+    needs: [preflight, build-native, verify-artifacts]
+    name: Publish ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    environment: npm
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - type-tune-linux-x64-gnu
+          - type-tune-linux-x64-musl
+          - type-tune-darwin-x64
+          - type-tune-darwin-arm64
+          - type-tune-win32-x64-msvc
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-native-packages
+          path: release-artifacts
+      - name: Recheck artifact integrity
+        run: node scripts/release-artifacts.mjs verify release-artifacts ${{ github.sha }}
+      - name: Publish verified native tarball
+        run: npm publish release-artifacts/${{ matrix.package }}/package.tgz --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-root:
+    needs: publish-native
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      - name: Publish root launcher after all native packages
+        run: npm publish --ignore-scripts --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
