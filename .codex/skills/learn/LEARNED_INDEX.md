@@ -1,10 +1,7 @@
 # Learned Patterns
 
-- **[fail-closed-plan-review](learned/fail-closed-plan-review.md)** - Require complete reviewed Markdown or explicit acceptance before applying plan statuses.
-- **[jsdoc-function-contract-comments](learned/jsdoc-function-contract-comments.md)** - Document named functions with concise JSDoc, including `@param` and `@returns` contract tags.
-- **[native-apply-parity](learned/native-apply-parity.md)** - Preserve TypeScript-compatible module shapes and text when the Rust core applies multiple moves.
-- **[native-barrel-type-reexport-order](learned/native-barrel-type-reexport-order.md)** - Keep standalone type-only barrel re-exports after value re-exports to match TypeScript output.
-- **[parallelize-fixture-heavy-vitest-suites](learned/parallelize-fixture-heavy-vitest-suites.md)** - Split expensive isolated fixture tests across files to use Vitest worker parallelism without weakening validation.
-- **[typedoc-exported-model-comments](learned/typedoc-exported-model-comments.md)** - Require concise TypeDoc comments on exported model types and each exported object type field.
-- **[untrusted-plan-project-boundaries](learned/untrusted-plan-project-boundaries.md)** - Layer lexical, canonical filesystem, and fresh-scan checks around plan-driven rewrite paths.
-- **[validated-dry-run-transaction](learned/validated-dry-run-transaction.md)** - Run the same post-rewrite compile gate in preview, then always roll back.
+- [Fail-closed plan review](learned/fail-closed-plan-review.md): preserve explicit selection and complete Markdown review.
+- [Compatibility exports and imports](learned/native-apply-parity.md): protect source module shape and safe import merging.
+- [Type-only barrel re-export order](learned/native-barrel-type-reexport-order.md): preserve safe re-export behavior and avoid redirecting unmoved symbols.
+- [Untrusted plan project boundaries](learned/untrusted-plan-project-boundaries.md): validate paths, metadata, and source freshness.
+- [Validated dry-run transaction](learned/validated-dry-run-transaction.md): validate the temporary rewrite and report rollback errors.

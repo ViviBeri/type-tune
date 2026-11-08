@@ -1,50 +1,13 @@
-# Preserve standalone type barrel re-export order
+# Type-only barrel re-export order
 
-**Captured:** 2026-10-21
-**Context:** Rust `apply` rewrite parity with TypeScript printer output.
-**Tags:** rust, rewrite, parity, barrel, re-export
+The rewrite can move a standalone, single-specifier `export type` after later value re-exports;
+`move_type_only_reexport_after_values` applies this narrow case. Preserve its statement and module
+specifier conventions when changing this behavior.
 
-## Problem
+More importantly, a barrel statement containing moved and unmoved symbols must not redirect an
+unmoved symbol. Preserve names and aliases, avoid overlapping edits when candidates share a barrel,
+and retain the original route when a split cannot be made safely and the source compatibility
+re-export keeps it valid. Test mixed, renamed, wildcard, and multi-candidate exports with compilation.
 
-When rewriting a moved declaration through a barrel module, TypeScript keeps value
-re-exports before a standalone type-only re-export from the same module. Emitting
-the rewritten type export in its original earlier position produces semantically
-equivalent code, but breaks deterministic native/TypeScript apply parity.
-
-## Solution
-
-For a standalone `export type { Name } from 'module';` with one export specifier,
-check for a later value re-export. If one exists, delete the type-only statement
-(including its adjacent line break) and insert the rewritten statement after the
-last value re-export. Preserve the module-specifier quote style.
-
-Apply this only to whole, standalone type-only re-export statements. Mixed inline
-exports use the existing split-rewrite path and should not be reordered by this
-rule.
-
-## Example
-
-Before a declaration move:
-
-```ts
-export type { Shared as default } from './shared';
-export { value } from './shared';
-```
-
-After TypeScript-compatible rewriting:
-
-```ts
-export { value } from './shared';
-export type { Shared as default } from './shared';
-```
-
-## When to use
-
-Use this rule when a Rust source rewrite changes a barrel re-export and exact
-TypeScript printer parity matters. Add a differential fixture with a default type
-re-export before a value re-export from the same source.
-
-## Related files
-
-- `crates/type-tune-core/src/rewrite.rs`
-- `scripts/native-differential.mjs`
+Relevant code: `crates/type-tune-core/src/rewrite/barrel.rs`,
+`crates/type-tune-core/src/rewrite/reexports.rs`, and `crates/type-tune-core/src/rewrite/tests.rs`.
