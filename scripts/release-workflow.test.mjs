@@ -98,6 +98,7 @@ test("workflow dependencies prevent publishing until every gate succeeds", () =>
   assert.match(jobs["verify-artifacts"], /release-artifacts\.mjs verify/);
   assert.match(jobs["publish-native"], /needs: \[preflight, build-native, verify-artifacts\]/);
   assert.match(jobs["publish-root"], /needs: publish-native/);
+  assert.match(jobs["publish-root"], /npm publish --ignore-scripts --access public --provenance/);
   for (const job of Object.values(jobs)) {
     assert.doesNotMatch(job, /^    if:.*(?:always|failure|cancelled)\s*\(/m);
   }
