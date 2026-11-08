@@ -17,6 +17,8 @@
 
 It creates a reviewable plan, updates supported type imports and re-exports, and validates the rewrite with TypeScript. **You decide what moves and where.**
 
+Guides for installation, the first scan, and the review workflow live in the [official documentation](https://type-tune-nine.vercel.app/). Releases are listed on [GitHub Releases](https://github.com/necoz-oss/type-tune/releases), and the package is [`type-tune` on npm](https://www.npmjs.com/package/type-tune).
+
 ## Why type-tune?
 
 Types often start next to a component or utility, then end up shared across a project. Moving them later means tracking imports, local dependencies, and barrels by hand.
@@ -33,30 +35,52 @@ Unlike [Knip](https://knip.dev/), which finds unused code, type-tune focuses on 
   <img src="docs/public/animation/conveyor-belt.gif" width="540" alt="Animated type-move workflow" />
 </p>
 
+## Installation
+
+Install the published npm package in a project, or run a one-off command. Both need **Node.js 22+**. The launcher selects a platform binary for macOS arm64/x64, Linux x64 (glibc or musl), or Windows x64.
+
+Add it as a development dependency:
+
+```bash
+pnpm add -D type-tune
+# npm install -D type-tune
+# yarn add -D type-tune
+# bun add -d type-tune
+```
+
+Then run the installed CLI. `pnpm exec` and `npx` use the local install when the package is already in the project:
+
+```bash
+pnpm exec type-tune scan --project tsconfig.json
+# npx type-tune scan --project tsconfig.json
+```
+
+Without a local install, `npx type-tune scan --project tsconfig.json` downloads the package for that invocation. The project should have TypeScript available: dry-run and apply prefer `node_modules/.bin/tsc`, then `tsc` on `PATH`.
+
 ## Quick Start
 
-Start with a clean Git working tree.
+Start from a clean Git working tree so the rewrite diff stays easy to review. The commands below use `pnpm exec` after `pnpm add -D type-tune`. After `npm install -D type-tune`, use `npx type-tune` with the same arguments.
 
 ```bash
 # 1. Find candidates
-npx type-tune scan --project tsconfig.json
+pnpm exec type-tune scan --project tsconfig.json
 
 # 2. Generate a reviewable plan
-npx type-tune plan --project tsconfig.json \
+pnpm exec type-tune plan --project tsconfig.json \
   --out .type-tune/plan.json \
   --markdown .type-tune/plan.md
 
 # 3. Review the plan (or edit plan.md manually)
-npx type-tune review --markdown .type-tune/plan.md
+pnpm exec type-tune review --markdown .type-tune/plan.md
 
 # 4. Preview, then apply
-npx type-tune apply --plan .type-tune/plan.json \
+pnpm exec type-tune apply --plan .type-tune/plan.json \
   --markdown .type-tune/plan.md --dry-run
-npx type-tune apply --plan .type-tune/plan.json \
+pnpm exec type-tune apply --plan .type-tune/plan.json \
   --markdown .type-tune/plan.md
 ```
 
-Candidates begin as `[ignore]`. Mark only the ones you want as `[apply]`. You can also change the `to:` path in `plan.md` to select a **new, project-relative destination**:
+Candidates begin as `[ignore]`. Mark only the ones you want as `[apply]`, and keep every candidate in the file. You can change the `to:` path in `plan.md` to a **new, project-relative destination**:
 
 ```md
 - [apply] <candidate-id> `OrderSummary`
@@ -65,7 +89,9 @@ Candidates begin as `[ignore]`. Mark only the ones you want as `[apply]`. You ca
   - to: `src/domains/orders/types/order-summary.ts`
 ```
 
-Keep every candidate in the plan. Candidates from the same source must share a destination. Do not edit the original candidate metadata in `plan.json`.
+`plan.md` is the file you edit. `plan.json` keeps candidate metadata, source fingerprints, and the options used to build the plan. Apply reads approval and destination changes from the Markdown, then checks them against `plan.json`. Do not edit that metadata in `plan.json`.
+
+A `to:` path must differ from the source, use a normalized project-relative path, and end in `.ts`, `.tsx`, `.mts`, or `.cts`. It cannot be a declaration file or a file that already exists. Approved candidates from the same source file must share one destination. `review` needs an interactive terminal; editing `plan.md` directly works anywhere.
 
 ## A small example
 
@@ -98,21 +124,11 @@ export type { OrderSummary } from "./types/order";
 
 That helps preserve imports through the original module, including unscanned consumers, but does not replace their own typechecks or builds.
 
-## Installation
-
-```bash
-npx type-tune scan --project tsconfig.json
-# or
-pnpm add -D type-tune
-```
-
-The npm launcher requires **Node.js 22+** and selects a platform-specific Rust binary for macOS arm64/x64, Linux x64 GNU/musl, or Windows x64.
-
 ## Scope & safety
 
 - **TypeScript first:** scan and rewrite inspect `.ts` and `.tsx` files from the selected `tsconfig.json`. Vue, Svelte, Astro, JavaScript, and external consumers are not counted as referrers or rewritten. Run their own checks afterward.
-- **Validation:** apply uses `tsc --noEmit --project`. It is not a Vue-aware or full-framework validation gate.
-- **Safe review:** plans are revalidated against source changes and destination restrictions. Dry-run temporarily writes files, then restores them on normal completion. Forced termination and concurrent edits are not covered by that guarantee.
+- **Validation:** apply and dry-run run `tsc --noEmit --project`. That check is not Vue-aware and does not replace a framework build or consumer tests. After a successful apply, review the diff and run your formatter, tests, and framework build.
+- **Safe review:** plans are revalidated against source changes and destination restrictions. A normal validation failure rolls the rewrite back. Dry-run writes the same files, validates them, and restores them when that process finishes normally. Forced termination and concurrent edits are outside that guarantee.
 - **Limited moves:** exported type aliases and interfaces only; `enum`, `class`, default exports, namespace merges, and advanced value-derived types are outside the current scope.
 - **Conservative formatting:** local conventions are preserved where safely possible, but formatter-clean output is not guaranteed. Review the diff and run your formatter.
 - **Explicit scope:** existing `types/` directories and `types.ts` modules are excluded by default; monorepo traversal is not automatic.
@@ -123,37 +139,38 @@ For supported options and more detailed limitations, see [Requirements](docs/req
 
 ```bash
 # Understand why a declaration is excluded
-npx type-tune scan --project tsconfig.json --explain
+pnpm exec type-tune scan --project tsconfig.json --explain
 
 # Include declarations already in types locations
-npx type-tune scan --project tsconfig.json --include-existing-types
+pnpm exec type-tune scan --project tsconfig.json --include-existing-types
 
 # Move one declaration directly (with preview)
-npx type-tune extract OrderSummary \
+pnpm exec type-tune extract OrderSummary \
   --from src/features/order/OrderPage.tsx \
   --to src/features/order/types/order.ts \
   --project tsconfig.json --dry-run
 
 # Preview optional AI review data before sending it to a provider
-npx type-tune plan --project tsconfig.json --ai-review --ai-dry-run
+pnpm exec type-tune plan --project tsconfig.json --ai-review --ai-dry-run
 ```
 
-AI review is opt-in and only annotates the plan. See [AI review design](docs/ai-review-design.md) for provider configuration and data handling.
+AI review is off unless you pass `--ai-review`. It only annotates the plan. `--ai-dry-run` writes the request and does not contact a provider. A real review can send source context to OpenAI, an OpenAI-compatible endpoint, Anthropic, or a configured Ollama server. The default `mock` provider reads a local `--ai-response-file` instead. See [AI review design](docs/ai-review-design.md) before enabling it.
 
-## Development
+## Development from source
 
-Build and use the CLI from source before npm publication:
+Building in this repository is separate from installing the npm package:
 
 ```bash
 pnpm install
 pnpm build
-target/release/type-tune --help
+./target/release/type-tune --help
 ```
 
 Run the main checks with `pnpm check`, and run the documentation checks with `pnpm docs:check && pnpm docs:build`.
 
 ## Documentation
 
+- [Official documentation](https://type-tune-nine.vercel.app/) · [npm package](https://www.npmjs.com/package/type-tune) · [GitHub Releases](https://github.com/necoz-oss/type-tune/releases)
 - [Architecture](docs/design.md) · [Requirements](docs/requirements.md)
 - [AI review](docs/ai-review-design.md) · [Release guide](RELEASING.md)
 - [Distribution](docs/rust-migration.md) · [Development status](docs/development-plan.md)

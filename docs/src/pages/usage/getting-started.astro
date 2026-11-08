@@ -1,0 +1,98 @@
+---
+import { GITHUB_URL, NPM_PACKAGE_URL, RELEASES_URL } from "../../shared/config/navigation.js";
+import SiteShell from "../../app/providers/site-shell.astro";
+import { installCommands } from "../../shared/config/install-commands.js";
+import Callout from "../../shared/ui/callout.astro";
+import CodeBlock from "../../shared/ui/code-block.astro";
+import CodeTabs from "../../shared/ui/code-tabs.astro";
+import Heading from "../../shared/ui/heading.astro";
+import PageHeader from "../../shared/ui/page-header.astro";
+import TextLink from "../../shared/ui/text-link.astro";
+---
+
+<SiteShell
+  title="Getting started"
+  description="Install type-tune on Node.js 22+ and run the first TypeScript scan."
+  withSidebar
+>
+  <article class="prose">
+    <PageHeader
+      eyebrow="Usage"
+      title="Getting started"
+      lead="Install the published CLI, confirm your platform, and scan one TypeScript project."
+    />
+
+    <section class="content-section">
+      <Heading>What you need</Heading>
+      <p>
+        The npm package requires <strong>Node.js 22 or newer</strong>. Its launcher runs a
+        platform-specific Rust binary. Supported hosts are:
+      </p>
+      <ul>
+        <li>macOS arm64 and x64</li>
+        <li>Linux x64 with glibc or musl</li>
+        <li>Windows x64</li>
+      </ul>
+      <p>
+        On any other platform, running the CLI fails with an unsupported-platform error. Scan one
+        <code>tsconfig.json</code> at a time. In a monorepo, repeat the command for each package
+        you want to analyze.
+      </p>
+      <Callout>
+        Dry-run and apply look for <code>node_modules/.bin/tsc</code> in the project, then
+        <code>tsc</code> on <code>PATH</code>. Install the project's TypeScript dependency before
+        you preview or keep a move.
+      </Callout>
+    </section>
+
+    <section class="content-section">
+      <Heading>Install the npm package</Heading>
+      <p>
+        Published releases are on <TextLink href={NPM_PACKAGE_URL} external>npm</TextLink> and
+        <TextLink href={RELEASES_URL} external>GitHub Releases</TextLink>. Source and issues live in
+        the <TextLink href={GITHUB_URL} external>repository</TextLink>.
+      </p>
+      <CodeTabs commands={installCommands} label="Install type-tune" />
+      <p>Run the binary that the local install provides:</p>
+      <CodeBlock code={`pnpm exec type-tune --version
+# after npm install -D type-tune:
+npx type-tune --version`} />
+      <p>
+        <code>pnpm exec</code> and <code>npx</code> use the project install when
+        <code>type-tune</code> is already a dependency. A bare
+        <code>npx type-tune scan --project tsconfig.json</code> without that dependency downloads
+        the package for one invocation.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <Heading>Run the first scan</Heading>
+      <p>
+        <code>scan</code> is read-only. It lists exported <code>type</code> aliases and
+        <code>interface</code> declarations in <code>.ts</code> and <code>.tsx</code> files selected
+        by the project config. The default <code>--project</code> is <code>tsconfig.json</code>, and
+        a candidate needs two referrer files outside its own file.
+      </p>
+      <CodeBlock code={`pnpm exec type-tune scan --project tsconfig.json
+pnpm exec type-tune scan --project tsconfig.json --explain`} />
+      <p>
+        <code>--explain</code> reports why discovered exported declarations were excluded, such as
+        insufficient referrers or an existing type location. Generated files are excluded during
+        discovery unless <code>--include-generated</code> is specified. Declaration files such as
+        <code>.d.ts</code> are not candidates. <code>.vue</code>, <code>.svelte</code>,
+        <code>.astro</code>, and JavaScript files are not scanned or rewritten.
+      </p>
+      <p>
+        The examples on this site use <code>pnpm exec</code>. After
+        <code>npm install -D type-tune</code>, replace that prefix with <code>npx</code> and keep
+        the same arguments.
+      </p>
+      <p>
+        When the scan shows a declaration you might move, continue with the
+        <TextLink href="/usage/workflow">scan, plan, review, dry-run, and apply workflow</TextLink>.
+        To move one symbol you already chose, see the
+        <TextLink href="/usage/usecases">extract example</TextLink>.
+      </p>
+    </section>
+  </article>
+</SiteShell>

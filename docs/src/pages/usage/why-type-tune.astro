@@ -106,8 +106,10 @@ import TextLink from "../../shared/ui/text-link.astro";
       <Heading>Current scope</Heading>
       <p>
         type-tune analyzes exported type aliases and interfaces in <code>.ts</code> and
-        <code>.tsx</code> files loaded from one <code>tsconfig.json</code>. Run it separately for each
-        package in a monorepo.
+        <code>.tsx</code> files loaded from one <code>tsconfig.json</code>. <code>.mts</code> and
+        <code>.cts</code> files are not scanned. Run the CLI separately for each package in a
+        monorepo. Installation and platform support are in
+        <TextLink href="/usage/getting-started">Getting started</TextLink>.
       </p>
       <Callout>
         JavaScript included through <code>allowJs</code>, framework component files such as

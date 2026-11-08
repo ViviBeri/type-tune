@@ -90,6 +90,8 @@ export const cliOptionSections: CliOptionSection[] = [
   {
     id: "plan-options",
     title: "plan options",
+    description:
+      "plan writes .type-tune/plan.json and .type-tune/plan.md. Edit approval and destinations in the Markdown file.",
     options: [
       {
         command: "plan",
@@ -143,8 +145,9 @@ export const cliOptionSections: CliOptionSection[] = [
         command: "apply",
         name: "--markdown",
         value: "<path>",
-        defaultValue: "none",
-        description: "Reviewed plan.md whose edited statuses should be applied.",
+        defaultValue: "required",
+        description:
+          "Reviewed plan.md. Required unless --accept-unreviewed is set. Supplies apply/ignore status and any edited destination.",
       },
       {
         command: "apply",
@@ -235,7 +238,8 @@ export const cliOptionSections: CliOptionSection[] = [
         name: "--ai-provider",
         value: "<provider>",
         defaultValue: "mock",
-        description: "Provider: mock, openai, openai-compatible, anthropic, or ollama.",
+        description:
+          "Provider: mock, openai, openai-compatible, anthropic, or ollama. mock reads a local response file and does not call a network API.",
       },
       {
         command: "ai-review",
@@ -255,22 +259,23 @@ export const cliOptionSections: CliOptionSection[] = [
         command: "ai-review",
         name: "--ai-response-file",
         value: "<path>",
-        defaultValue: "none",
-        description: "Mock provider response JSON.",
+        defaultValue: "required for mock",
+        description: "Local JSON decisions for the mock provider. Required when mock actually runs.",
       },
       {
         command: "ai-review",
         name: "--ai-endpoint",
         value: "<url>",
         defaultValue: "provider default",
-        description: "Provider API endpoint.",
+        description:
+          "Required for openai-compatible. OpenAI, Anthropic, and Ollama use their own defaults when omitted.",
       },
       {
         command: "ai-review",
         name: "--ai-model",
         value: "<model>",
-        defaultValue: "none",
-        description: "Provider model name.",
+        defaultValue: "required except mock",
+        description: "Required for openai, openai-compatible, anthropic, and ollama.",
       },
       {
         command: "ai-review",

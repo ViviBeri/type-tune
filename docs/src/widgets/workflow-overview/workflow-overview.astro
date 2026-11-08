@@ -4,18 +4,18 @@ import CodeTabs from "../../shared/ui/code-tabs.astro";
 import HomeArt from "../../shared/ui/home-art.astro";
 
 const planningCommands = [
-  { manager: "Scan", command: "type-tune scan --project tsconfig.json" },
-  { manager: "Plan", command: "type-tune plan --project tsconfig.json --out .type-tune/plan.json --markdown .type-tune/plan.md" },
+  { manager: "Scan", command: "pnpm exec type-tune scan --project tsconfig.json" },
+  { manager: "Plan", command: "pnpm exec type-tune plan --project tsconfig.json --out .type-tune/plan.json --markdown .type-tune/plan.md" },
 ];
 const applyingCommands = [
-  { manager: "Dry run", command: "type-tune apply --plan .type-tune/plan.json --markdown .type-tune/plan.md --dry-run" },
-  { manager: "Apply", command: "type-tune apply --plan .type-tune/plan.json --markdown .type-tune/plan.md" },
+  { manager: "Dry run", command: "pnpm exec type-tune apply --plan .type-tune/plan.json --markdown .type-tune/plan.md --dry-run" },
+  { manager: "Apply", command: "pnpm exec type-tune apply --plan .type-tune/plan.json --markdown .type-tune/plan.md" },
 ];
 ---
 <section class="workflow-overview" id="workflow">
   <div class="workflow-overview__copy">
     <Heading>Workflow</Heading>
-    <p>Scan your project, review a plan, and apply the moves you approve. Preview the changes with a dry run before updating your files.</p>
+    <p>Scan your project, approve candidates in <code>plan.md</code>, and preview the rewrite before keeping it. These commands use <code>pnpm exec</code> after a local pnpm install. With npm, use <code>npx type-tune</code> and the same arguments.</p>
     <a class="link-underline" href="/usage/workflow">View the complete workflow <span aria-hidden="true">→</span></a>
   </div>
   <div class="workflow-overview__commands">

@@ -12,6 +12,7 @@ export const sidebarSections: SidebarSection[] = [
   {
     title: "Guide",
     items: [
+      { label: "Getting started", href: "/usage/getting-started" },
       { label: "Why type-tune", href: "/usage/why-type-tune" },
       { label: "Workflow", href: "/usage/workflow" },
       { label: "Usecases", href: "/usage/usecases" },
@@ -31,6 +32,10 @@ export const sidebarSections: SidebarSection[] = [
   },
 ];
 
+export const NPM_PACKAGE_URL = "https://www.npmjs.com/package/type-tune";
+export const RELEASES_URL = "https://github.com/necoz-oss/type-tune/releases";
+
 export const resourceNavigation: NavigationItem[] = [
-  { label: "npm", href: "https://www.npmjs.com/package/type-tune", external: true },
+  { label: "npm", href: NPM_PACKAGE_URL, external: true },
+  { label: "Releases", href: RELEASES_URL, external: true },
 ];

@@ -1,7 +1,10 @@
 ---
 import SiteShell from "../../app/providers/site-shell.astro";
+import Callout from "../../shared/ui/callout.astro";
 import CodeBlock from "../../shared/ui/code-block.astro";
+import Heading from "../../shared/ui/heading.astro";
 import PageHeader from "../../shared/ui/page-header.astro";
+import TextLink from "../../shared/ui/text-link.astro";
 ---
 
 <SiteShell
@@ -16,15 +19,26 @@ import PageHeader from "../../shared/ui/page-header.astro";
       lead="Scan first, review a stable plan, preview the rewrite, and only then keep file changes."
     />
 
+    <p>
+      Examples use <code>pnpm exec type-tune</code> after <code>pnpm add -D type-tune</code>. After
+      <code>npm install -D type-tune</code>, use <code>npx type-tune</code> with the same arguments.
+      Installation and the first scan are covered in
+      <TextLink href="/usage/getting-started">Getting started</TextLink>.
+    </p>
+
     <ol class="workflow-list content-section">
       <li>
         <strong>Scan candidates.</strong>
         <p>Inspect shared declarations, referrer counts, destinations, and omission reasons.</p>
-        <CodeBlock code="type-tune scan --project tsconfig.json --verbose --explain" />
+        <CodeBlock code="pnpm exec type-tune scan --project tsconfig.json --verbose --explain" />
       </li>
       <li>
         <strong>Create a plan.</strong>
-        <CodeBlock code={`type-tune plan \\
+        <p>
+          These output paths are the defaults. Passing them explicitly makes the later apply command
+          obvious.
+        </p>
+        <CodeBlock code={`pnpm exec type-tune plan \\
   --project tsconfig.json \\
   --out .type-tune/plan.json \\
   --markdown .type-tune/plan.md`} />
@@ -32,38 +46,124 @@ import PageHeader from "../../shared/ui/page-header.astro";
       <li>
         <strong>Review <code>plan.md</code>.</strong>
         <p>
-          Candidates start as <code>ignore</code>. Use the interactive review command, or edit the
-          Markdown directly, to set every approved candidate to <code>apply</code> while keeping every
-          candidate ID in the file. You can edit a candidate's <code>to:</code> path to select a
-          different project-relative TypeScript destination. Candidates from one source must share
-          a destination, and the destination file must not already exist.
+          Candidates start as <code>ignore</code>. <code>review</code> needs an interactive terminal
+          and toggles each candidate between <code>apply</code> and <code>ignore</code>. You can
+          edit the Markdown directly instead. Keep every candidate ID from the generated file.
         </p>
-        <CodeBlock code="type-tune review --markdown .type-tune/plan.md" />
+        <CodeBlock code="pnpm exec type-tune review --markdown .type-tune/plan.md" />
         <CodeBlock language="markdown" label="plan.md" code={'- [apply] abc123def456 `OrderSummary`\n  - kind: `typeAlias`\n  - from: `src/features/order/schema.ts`\n  - to: `src/domains/orders/types/order-summary.ts`'} />
       </li>
       <li>
         <strong>Preview the real rewrite.</strong>
-        <CodeBlock code={`type-tune apply \\
+        <CodeBlock code={`pnpm exec type-tune apply \\
   --plan .type-tune/plan.json \\
   --markdown .type-tune/plan.md \\
   --dry-run`} />
       </li>
       <li>
         <strong>Apply.</strong>
-        <CodeBlock code={`type-tune apply \\
+        <CodeBlock code={`pnpm exec type-tune apply \\
   --plan .type-tune/plan.json \\
   --markdown .type-tune/plan.md`} />
       </li>
       <li>
-        <strong>Review and commit.</strong>
-        <p>Inspect the normal source diff and commit it with the rest of your project changes.</p>
+        <strong>Check the result.</strong>
+        <p>
+          Read the Git diff, run your formatter, and run the tests or framework build that
+          <code>tsc --noEmit</code> does not cover.
+        </p>
       </li>
     </ol>
-    <p>
-      <code>plan.md</code> is the human review surface. <code>plan.json</code> carries structured
-      candidate metadata and resolved options used by apply-time validation. Applying without
-      Markdown requires the explicit <code>--accept-unreviewed</code> flag.
-    </p>
+
+    <section class="content-section">
+      <Heading><code>plan.json</code> and <code>plan.md</code></Heading>
+      <p>
+        <code>plan.json</code> is the structured record: candidate identity, source and proposed
+        destination, referrers, local type dependencies, import strategy, a source fingerprint, and
+        the options that produced the plan. Treat it as input for apply. Do not edit its candidate
+        metadata.
+      </p>
+      <p>
+        <code>plan.md</code> is the review surface. Apply reads two edits from it: the
+        <code>[apply]</code> or <code>[ignore]</code> marker, and the <code>to:</code> path. Every
+        candidate ID in <code>plan.json</code> must still appear exactly once, and each entry needs
+        a <code>to:</code> line. Applying without Markdown requires
+        <code>--accept-unreviewed</code>, which uses the statuses stored in <code>plan.json</code>.
+      </p>
+      <p>
+        Before writing files, apply scans again and rejects a stale fingerprint, a missing
+        declaration, a duplicate candidate, or a path outside the project.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <Heading>Destination rules</Heading>
+      <p>
+        The default <code>--placement-style</code> is <code>collocation</code>, which proposes a
+        <code>types/</code> file beside the source. <code>repo-types</code> proposes the equivalent
+        path under the repository <code>types/</code> directory. Either proposal can be replaced by
+        editing <code>to:</code> in <code>plan.md</code>.
+      </p>
+      <ul>
+        <li>The path is project-relative, uses forward slashes, and has no <code>.</code> or <code>..</code> segments.</li>
+        <li>It ends in <code>.ts</code>, <code>.tsx</code>, <code>.mts</code>, or <code>.cts</code>, and it is not a declaration file.</li>
+        <li>It differs from the source path, and the destination file does not already exist.</li>
+        <li>Approved candidates from the same source file share one destination.</li>
+        <li>Two different declarations with the same symbol name are not written to the same destination.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <Heading>What the rewrite guarantees</Heading>
+      <p>
+        For approved entries, type-tune moves the declaration and its safe same-file type
+        dependencies, updates supported type imports, and validates with
+        <code>tsc --noEmit --project</code>. Relative imports, <code>baseUrl</code> and
+        <code>paths</code> aliases, and simple barrel re-exports are updated when they can be
+        resolved. The original module keeps a type-only compatibility re-export when that is needed
+        to preserve an unresolved star barrel, an external package import, or a consumer the scan
+        does not rewrite.
+      </p>
+      <p>
+        A normal TypeScript failure rolls the file changes back. <code>--dry-run</code> performs
+        the same write and validation, then restores the files when that process finishes normally.
+        Killing the process, or editing the same files at the same time, is outside that guarantee.
+        If rollback itself fails, the CLI reports the failure instead of claiming the tree was
+        restored.
+      </p>
+      <Callout>
+        <code>tsc</code> does not typecheck Vue, Svelte, or Astro files, and it does not see
+        consumers outside this project. Run those builds and tests after a move. Formatter-clean
+        output is not guaranteed.
+      </Callout>
+    </section>
+
+    <section class="content-section">
+      <Heading>Optional AI review</Heading>
+      <p>
+        AI review runs only when <code>plan --ai-review</code> is set. It can annotate a candidate
+        with <code>apply</code>, <code>ignore</code>, or <code>needs-review</code>. That note does
+        not change source files, and <code>apply</code> does not call a provider.
+      </p>
+      <p>
+        The default context mode is <code>snippets</code>, which includes declaration text, local
+        type dependencies, and relevant import lines. <code>summary</code> sends metadata and paths.
+        <code>full</code> also sends the involved source files. Redaction covers common secret
+        assignments only as a best effort.
+      </p>
+      <CodeBlock code={`pnpm exec type-tune plan \\
+  --project tsconfig.json \\
+  --ai-review \\
+  --ai-dry-run \\
+  --ai-request-out .type-tune/ai-request.json`} />
+      <p>
+        <code>--ai-dry-run</code> does not contact a provider. A later review with OpenAI,
+        OpenAI-compatible, or Anthropic sends that context to the provider. Ollama defaults to a
+        local endpoint at <code>127.0.0.1:11434</code>. The built-in <code>mock</code> provider
+        reads <code>--ai-response-file</code> and does not make a network call. Provider flags are
+        listed under <TextLink href="/config/ai-review-options">AI review options</TextLink>.
+      </p>
+    </section>
   </article>
 </SiteShell>
 
