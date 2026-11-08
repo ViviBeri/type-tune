@@ -76,10 +76,9 @@ npx type-tune --version`} />
       <CodeBlock code={`pnpm exec type-tune scan --project tsconfig.json
 pnpm exec type-tune scan --project tsconfig.json --explain`} />
       <p>
-        <code>--explain</code> reports exported declarations that were omitted, including files
-        under a <code>types/</code> directory, a file named exactly <code>types.ts</code>, and
-        generated paths (<code>generated/</code>, <code>__generated__/</code>,
-        <code>*.generated.ts</code>, and <code>*.generated.tsx</code>). Declaration files such as
+        <code>--explain</code> reports why discovered exported declarations were excluded, such as
+        insufficient referrers or an existing type location. Generated files are excluded during
+        discovery unless <code>--include-generated</code> is specified. Declaration files such as
         <code>.d.ts</code> are not candidates. <code>.vue</code>, <code>.svelte</code>,
         <code>.astro</code>, and JavaScript files are not scanned or rewritten.
       </p>
