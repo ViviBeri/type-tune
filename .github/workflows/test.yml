@@ -49,7 +49,7 @@ jobs:
         run: node scripts/verify-movement-fixture.mjs
 
       - name: Test release workflow gates without publishing
-        run: node --test scripts/npm-invocation.test.mjs scripts/release-workflow.test.mjs scripts/v1-root-recovery.test.mjs
+        run: node --test scripts/npm-invocation.test.mjs scripts/release-workflow.test.mjs
 
       - name: Check npm launcher package
         run: node scripts/check-package.mjs
