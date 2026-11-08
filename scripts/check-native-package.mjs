@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
+import { npmInvocation } from "./npm-invocation.mjs";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -34,7 +35,8 @@ if (fs.readFileSync(checksumPath, "utf8") !== expected) {
   throw new Error(`${manifest.name} checksum does not match ${binaryRelativePath}.`);
 }
 
-const packed = spawnSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], {
+const npm = npmInvocation();
+const packed = spawnSync(npm.command, [...npm.args, "pack", "--dry-run", "--json", "--ignore-scripts"], {
   cwd: absoluteDirectory,
   encoding: "utf8",
 });

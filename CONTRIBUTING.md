@@ -27,6 +27,8 @@ Install dependencies:
 
 ```bash
 pnpm install
+# Optional: enable the local pre-commit checks
+pnpm exec lefthook install
 ```
 
 The commands below use [mise](https://mise.jdx.dev/) to provision the pinned stable Rust toolchain.

@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
+import { npmInvocation } from "./npm-invocation.mjs";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -23,7 +24,8 @@ if (command === "create") {
     throw new Error("Expected artifact directory, supported package, matching target and commit SHA.");
   }
   fs.mkdirSync(directory, { recursive: true });
-  const packed = JSON.parse(execFileSync("npm", ["pack", `./packages/${name}`, "--ignore-scripts", "--json", "--pack-destination", directory], { encoding: "utf8" }));
+  const npm = npmInvocation();
+  const packed = JSON.parse(execFileSync(npm.command, [...npm.args, "pack", `./packages/${name}`, "--ignore-scripts", "--json", "--pack-destination", directory], { encoding: "utf8" }));
   const tarball = path.join(directory, packed[0].filename);
   fs.renameSync(tarball, path.join(directory, "package.tgz"));
   fs.writeFileSync(path.join(directory, "metadata.json"), JSON.stringify({ name, target, sha, version, digest: hash(path.join(directory, "package.tgz")) }) + "\n");
