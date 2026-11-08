@@ -1,7 +1,38 @@
+# Dependencies and generated output
 node_modules/
 dist/
 target/
-.type-tune/
 coverage/
+.astro/
+.nuxt/
+.vite/
+.turbo/
+.cache/
+packages/type-tune-*/bin/
+
+# Local tool state
+.type-tune/
 sample-project/
 .serena/
+.codex/config.toml
+*.log
+.DS_Store
+
+# Local credentials and environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.*.sample
+.npmrc
+!.npmrc.example
+.netrc
+.aws/
+.ssh/
+credentials.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
