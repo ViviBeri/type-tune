@@ -14,8 +14,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install mise and Rust
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+
+      - name: Install stable Rust toolchain
+        run: mise install rust@stable
+
       - name: Setup project
         uses: ./.github/actions/setup-pnpm
+        with:
+          node-version: "24"
 
       - name: Publish check
         run: pnpm publish:check
