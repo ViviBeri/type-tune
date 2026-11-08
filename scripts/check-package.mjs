@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
+import { npmInvocation } from "./npm-invocation.mjs";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -35,7 +36,8 @@ if (!fs.existsSync(launcherPath)) failures.push("bin/type-tune.mjs is missing.")
 const syntax = spawnSync(process.execPath, ["--check", launcherPath], { encoding: "utf8" });
 if (syntax.status !== 0) failures.push(syntax.stderr || "the npm launcher has invalid syntax.");
 
-const packed = spawnSync("npm", ["pack", "--dry-run", "--json", "--ignore-scripts"], {
+const npm = npmInvocation();
+const packed = spawnSync(npm.command, [...npm.args, "pack", "--dry-run", "--json", "--ignore-scripts"], {
   cwd: root,
   encoding: "utf8",
 });
@@ -80,7 +82,8 @@ function verifyPackedLauncher() {
   try {
     const packedRoot = path.join(temporaryRoot, "pack");
     fs.mkdirSync(packedRoot);
-    const packedRootResult = run("npm", [
+    const packedRootResult = run(npm.command, [
+      ...npm.args,
       "pack",
       "--json",
       "--ignore-scripts",

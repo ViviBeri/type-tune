@@ -40,8 +40,7 @@
     "package:check": "node scripts/check-package.mjs",
     "publish:check": "pnpm check && pnpm native:version:check && pnpm package:check",
     "release:check": "pnpm check && pnpm package:check",
-    "prepublishOnly": "pnpm publish:check",
-    "prepare": "lefthook install"
+    "prepublishOnly": "pnpm publish:check"
   },
   "devDependencies": {
     "lefthook": "^2.1.8",
