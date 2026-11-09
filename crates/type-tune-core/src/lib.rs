@@ -36,7 +36,14 @@ mod tests {
     use super::version;
 
     #[test]
-    fn exposes_the_package_version() {
-        assert_eq!(version(), "1.0.0");
+    fn matches_the_root_package_version() {
+        let manifest = include_str!("../../../package.json");
+        let parsed: serde_json::Value =
+            serde_json::from_str(manifest).expect("root package.json must be valid JSON");
+        let package_version = parsed
+            .get("version")
+            .and_then(serde_json::Value::as_str)
+            .expect("root package.json must contain a string version");
+        assert_eq!(version(), package_version);
     }
 }

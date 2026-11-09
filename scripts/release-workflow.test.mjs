@@ -17,6 +17,12 @@ const packages = {
 const sha = "a".repeat(40);
 const run = (args, cwd, env = {}) => spawnSync(process.execPath, args, { cwd, env: { ...process.env, ...env }, encoding: "utf8" });
 
+function nextPatch(version) {
+  const match = String(version).match(/^(\d+)\.(\d+)\.(\d+)$/);
+  if (!match) throw new Error(`Expected a numeric major.minor.patch version, received ${version}.`);
+  return `${match[1]}.${match[2]}.${Number(match[3]) + 1}`;
+}
+
 function fixture() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "type-tune-release-test-"));
   for (const name of ["scripts", "packages", "crates"]) {
@@ -36,20 +42,22 @@ test("release tag, event SHA, checkout and native versions must agree", (t) => {
   git("add", ".");
   git("commit", "-qm", "fixture");
   const commit = git("rev-parse", "HEAD");
-  git("tag", "v1.0.0");
-  git("tag", "v1.0.1");
-  const valid = { GITHUB_REF: "refs/tags/v1.0.0", GITHUB_REF_NAME: "v1.0.0", GITHUB_SHA: commit };
+  const version = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8")).version;
+  const other = nextPatch(version);
+  git("tag", `v${version}`);
+  git("tag", `v${other}`);
+  const valid = { GITHUB_REF: `refs/tags/v${version}`, GITHUB_REF_NAME: `v${version}`, GITHUB_SHA: commit };
   const validate = (env) => run(["scripts/validate-release.mjs"], dir, env);
   assert.equal(validate(valid).status, 0);
   for (const invalid of [
     { ...valid, GITHUB_REF: "", GITHUB_REF_NAME: "" },
     { ...valid, GITHUB_REF: "refs/heads/main", GITHUB_REF_NAME: "main" },
-    { ...valid, GITHUB_REF: "refs/tags/v1.0.1", GITHUB_REF_NAME: "v1.0.1" },
+    { ...valid, GITHUB_REF: `refs/tags/v${other}`, GITHUB_REF_NAME: `v${other}` },
     { ...valid, GITHUB_SHA: sha },
   ]) assert.notEqual(validate(invalid).status, 0);
   const manifest = path.join(dir, "packages/type-tune-linux-x64-gnu/package.json");
   const data = JSON.parse(fs.readFileSync(manifest));
-  data.version = "1.0.1";
+  data.version = other;
   fs.writeFileSync(manifest, JSON.stringify(data));
   assert.notEqual(validate(valid).status, 0);
 });
