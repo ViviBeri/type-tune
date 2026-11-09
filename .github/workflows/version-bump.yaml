@@ -58,6 +58,13 @@ jobs:
       - name: Format
         run: cargo fmt --all
 
+      - name: Install mise and Rust
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+
+      - run: mise install rust@stable
+
       - name: Release check
         run: pnpm publish:check
 

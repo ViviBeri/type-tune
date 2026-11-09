@@ -177,3 +177,55 @@ test("published package metadata stays synchronized for trusted publishing", () 
     assert.deepEqual(manifest.files, [`bin/${platform.binary}`, `bin/${platform.binary}.sha256`]);
   }
 });
+
+test("version bump installs mise before publish:check", () => {
+  const workflow = fs.readFileSync(path.join(root, ".github/workflows/version-bump.yaml"), "utf8");
+  const jobs = workflowJobs(workflow);
+  assert.deepEqual(Object.keys(jobs), ["bump-version"]);
+  const job = jobs["bump-version"];
+  const mise = job.indexOf("uses: jdx/mise-action@v2");
+  const installRust = job.indexOf("mise install rust@stable");
+  const releaseCheck = job.indexOf("pnpm publish:check");
+  assert.ok(mise !== -1 && installRust !== -1 && releaseCheck !== -1);
+  assert.ok(mise < installRust && installRust < releaseCheck);
+  assert.match(job.slice(mise, installRust), /install: false/);
+  assert.match(job, /uses: dtolnay\/rust-toolchain@stable/);
+  assert.match(job, /pnpm version \$\{\{ inputs\.release_type \}\} --no-git-tag-version/);
+  assert.match(job, /node scripts\/sync-native-versions\.mjs/);
+  assert.match(job, /pnpm install --lockfile-only/);
+  assert.match(job, /cargo fmt --all/);
+  assert.match(job, /git switch -c "release\/\$\{\{ env\.new_version \}\}"/);
+  assert.match(job, /chore\(release\): bump version to \$\{\{ env\.new_version \}\}/);
+  assert.match(job, /gh pr create/);
+});
+
+test("every publish:check job installs mise before the check", () => {
+  const workflowDir = path.join(root, ".github/workflows");
+  const checked = [];
+  for (const file of fs.readdirSync(workflowDir).sort()) {
+    const workflow = fs.readFileSync(path.join(workflowDir, file), "utf8");
+    for (const [name, job] of Object.entries(workflowJobs(workflow))) {
+      const releaseCheck = job.indexOf("pnpm publish:check");
+      if (releaseCheck === -1) continue;
+      checked.push(`${file}:${name}`);
+      const mise = job.indexOf("uses: jdx/mise-action@v2");
+      const installRust = job.indexOf("mise install rust@stable");
+      assert.ok(mise !== -1 && mise < releaseCheck, `${file} job ${name} runs publish:check without mise`);
+      assert.ok(installRust !== -1 && installRust < releaseCheck, `${file} job ${name} runs publish:check before mise install rust@stable`);
+      assert.match(job.slice(mise, installRust), /install: false/);
+    }
+  }
+  assert.deepEqual(checked, [
+    "npm-publish.yml:preflight",
+    "publish-check.yml:publish-check",
+    "version-bump.yaml:bump-version",
+  ]);
+});
+
+function workflowJobs(workflow) {
+  const marker = "\njobs:\n";
+  const start = workflow.indexOf(marker);
+  assert.notEqual(start, -1);
+  const jobSection = workflow.slice(start + marker.length);
+  return Object.fromEntries([...jobSection.matchAll(/^  ([a-z][a-z0-9-]+):\n([\s\S]*?)(?=^  [a-z][a-z0-9-]+:\n|$(?![\s\S]))/gm)].map((match) => [match[1], match[2]]));
+}
