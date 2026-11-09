@@ -98,7 +98,27 @@ test("workflow dependencies prevent publishing until every gate succeeds", () =>
   assert.match(jobs["verify-artifacts"], /release-artifacts\.mjs verify/);
   assert.match(jobs["publish-native"], /needs: \[preflight, build-native, verify-artifacts\]/);
   assert.match(jobs["publish-root"], /needs: publish-native/);
+  assert.match(jobs["publish-native"], /release-artifacts\.mjs verify/);
   assert.match(jobs["publish-root"], /npm publish --ignore-scripts --access public --provenance/);
+  assert.match(jobs["publish-native"], /npm publish release-artifacts\/\$\{\{ matrix\.package \}\}\/package\.tgz --access public --provenance/);
+  assert.match(workflow, /^permissions:\n {2}contents: read\n {2}id-token: write\n/m);
+  assert.match(jobs["build-native"], /Stage and verify platform package/);
+  assert.match(jobs["build-native"], /node scripts\/check-native-package\.mjs/);
+  assert.match(jobs["build-native"], /matrix\.target != 'x86_64-unknown-linux-musl'/);
+  for (const name of ["publish-native", "publish-root"]) {
+    const job = jobs[name];
+    assert.match(job, /runs-on: ubuntu-latest/);
+    assert.match(job, /environment: npm/);
+    assert.match(job, /contents: read/);
+    assert.match(job, /id-token: write/);
+    assert.match(job, /uses: actions\/setup-node@v5/);
+    assert.match(job, /node-version: "24"/);
+    assert.match(job, /package-manager-cache: false/);
+    assert.match(job, /^ {8}run: node scripts\/require-npm-version\.mjs$/m);
+    assert.doesNotMatch(job, /NPM_TOKEN|NODE_AUTH_TOKEN|secrets\./);
+    assert.doesNotMatch(job, /^\s+registry-url:/m);
+  }
+  assert.doesNotMatch(workflow, /NPM_TOKEN|NODE_AUTH_TOKEN/);
   for (const job of Object.values(jobs)) {
     assert.doesNotMatch(job, /^    if:.*(?:always|failure|cancelled)\s*\(/m);
   }
@@ -110,12 +130,50 @@ test("workflow dependencies prevent publishing until every gate succeeds", () =>
     assert.ok(jobs["publish-native"].includes(`- ${name}`));
   }
   assert.doesNotMatch(jobs.preflight + jobs["build-native"] + jobs["verify-artifacts"], /npm publish\s/);
-  assert.match(jobs["publish-native"], /npm publish release-artifacts\/\$\{\{ matrix\.package \}\}\/package\.tgz/);
   assert.match(workflow, /cancel-in-progress: false/);
   // With Actions' default success() condition, a failed or skipped dependency blocks its dependants.
   for (const failed of ["preflight", "build-native", "verify-artifacts"]) {
     const status = { preflight: true, "build-native": true, "verify-artifacts": true };
     status[failed] = false;
     assert.equal(status.preflight && status["build-native"] && status["verify-artifacts"], false);
+  }
+});
+
+test("trusted publishing rejects npm CLI versions before 11.5.1", () => {
+  const check = (version) => run(["scripts/require-npm-version.mjs", version], root);
+  for (const version of ["11.5.1", "11.5.2", "11.6.0", "12.0.0"]) {
+    const result = check(version);
+    assert.equal(result.status, 0, result.stderr);
+  }
+  for (const version of ["11.5.0", "11.4.9", "10.9.2", "11.5", "11.5.1-canary", "not-a-version"]) {
+    const result = check(version);
+    assert.notEqual(result.status, 0, version);
+    assert.match(result.stderr, /npm >= 11\.5\.1/);
+  }
+});
+
+test("published package metadata stays synchronized for trusted publishing", () => {
+  const rootManifest = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  assert.equal(rootManifest.name, "type-tune");
+  assert.equal(rootManifest.repository.type, "git");
+  assert.equal(rootManifest.repository.url, "git+https://github.com/necoz-oss/type-tune.git");
+  const platforms = {
+    "type-tune-darwin-arm64": { name: "@type-tune/darwin-arm64", os: ["darwin"], cpu: ["arm64"], binary: "type-tune" },
+    "type-tune-darwin-x64": { name: "@type-tune/darwin-x64", os: ["darwin"], cpu: ["x64"], binary: "type-tune" },
+    "type-tune-linux-x64-gnu": { name: "@type-tune/linux-x64-gnu", os: ["linux"], cpu: ["x64"], libc: ["glibc"], binary: "type-tune" },
+    "type-tune-linux-x64-musl": { name: "@type-tune/linux-x64-musl", os: ["linux"], cpu: ["x64"], libc: ["musl"], binary: "type-tune" },
+    "type-tune-win32-x64-msvc": { name: "@type-tune/win32-x64-msvc", os: ["win32"], cpu: ["x64"], binary: "type-tune.exe" },
+  };
+  assert.deepEqual(Object.keys(rootManifest.optionalDependencies).sort(), Object.values(platforms).map((platform) => platform.name).sort());
+  for (const [directory, platform] of Object.entries(platforms)) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(root, "packages", directory, "package.json"), "utf8"));
+    assert.equal(manifest.name, platform.name);
+    assert.equal(manifest.version, rootManifest.version);
+    assert.equal(rootManifest.optionalDependencies[platform.name], rootManifest.version);
+    assert.equal(manifest.repository, "https://github.com/necoz-oss/type-tune");
+    assert.deepEqual(manifest.os, platform.os);
+    assert.deepEqual(manifest.cpu, platform.cpu);
+    assert.deepEqual(manifest.libc, platform.libc);
+    assert.deepEqual(manifest.files, [`bin/${platform.binary}`, `bin/${platform.binary}.sha256`]);
   }
 });
