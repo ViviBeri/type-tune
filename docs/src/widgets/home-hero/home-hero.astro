@@ -1,6 +1,5 @@
 ---
 import Heading from "../../shared/ui/heading.astro";
-import HomeArt from "../../shared/ui/home-art.astro";
 ---
 <section class="hero">
   <div class="hero__copy">
@@ -8,7 +7,7 @@ import HomeArt from "../../shared/ui/home-art.astro";
     <p>type-tune moves shared TypeScript types without making you chase every import by hand.</p>
     <p>The Rust-powered CLI follows three deliberate steps:</p>
     <div class="hero__steps">
-      <HomeArt name="scan-plan-apply" width={290} height={88} mobileWidth={129} mobileHeight={40} alt="Scan, plan, apply" />
+      <img src="/animation/scan-plan-apply.gif" width="1472" height="464" alt="Scan, plan, apply" />
     </div>
     <p>Review the plan first; only the moves you approve are applied.</p>
   </div>
@@ -34,6 +33,12 @@ import HomeArt from "../../shared/ui/home-art.astro";
   }
   .hero__steps {
     margin-block: 1.5rem;
+  }
+  .hero__steps img {
+    display: block;
+    width: 290px;
+    max-width: 100%;
+    height: auto;
   }
   .hero__art {
     display: block;
@@ -62,6 +67,9 @@ import HomeArt from "../../shared/ui/home-art.astro";
     }
     .hero__steps {
       margin-block: 1.5rem 1rem;
+    }
+    .hero__steps img {
+      width: 129px;
     }
   }
 </style>

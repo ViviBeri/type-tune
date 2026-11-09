@@ -43,9 +43,11 @@ const links = [
 </header>
 
 <dialog id="home-menu" class="home-menu" aria-label="Primary navigation">
-  <button class="home-menu__close" type="button" aria-label="Close navigation" data-home-menu-close>×</button>
+  <button class="home-menu__close" type="button" aria-label="Close navigation" data-home-menu-close>
+    <img src="/parts/type-tune-smartphone-hamburger-menu-close.png" width="14" height="18" alt="" />
+  </button>
   <div class="home-menu__board">
-    <img class="home-menu__crab" src="/parts/type-tune-smartphone-menu-crab.png" width="296" height="350" alt="" />
+    <img class="home-menu__crab" src="/parts/type-tune-smartphone-menu-crab.png" width="1155" height="1366" alt="" />
     <nav class="home-menu__links" aria-label="Mobile navigation">
       {links.map(({ label, href, asset }) => (
         <a href={href} aria-label={label} aria-current={isCurrentSection(href) ? "page" : undefined}
@@ -201,16 +203,22 @@ const links = [
   }
   .home-menu__close {
     position: absolute;
-    top: calc((var(--header-height) - 44px) / 2 - 0.25rem);
+    top: calc((var(--header-height) - 44px) / 2);
     right: 1rem;
+    display: grid;
+    place-items: center;
     width: 44px;
     height: 44px;
     padding: 0;
     border: 0;
     background: transparent;
     color: var(--primary);
-    font-size: 2rem;
     cursor: pointer;
+  }
+  .home-menu__close img {
+    display: block;
+    width: 14px;
+    height: auto;
   }
   .home-header__toggle--pointer:focus-visible,
   .home-menu--pointer .home-menu__close:focus-visible {
@@ -274,6 +282,17 @@ const links = [
       border: 0;
       background: transparent;
       cursor: pointer;
+    }
+    .home-menu__board {
+      width: calc(min(68vw, 28rem) * 1.235);
+      width: round(nearest, calc(min(68vw, 28rem) * 1.235), 2px);
+    }
+  }
+
+  @media (max-width: 360px) {
+    .home-menu__board {
+      width: calc(72vw * 1.235);
+      width: round(nearest, calc(72vw * 1.235), 2px);
     }
   }
 </style>

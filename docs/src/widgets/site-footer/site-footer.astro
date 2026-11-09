@@ -11,7 +11,14 @@ const { isHome } = Astro.props;
 
 <footer id="site-footer" class:list={["site-footer", { "site-footer--home": isHome }]}>
   <div class="site-footer__inner">
-    <span class="site-footer__credit">
+    <img
+      class="site-footer__animation"
+      src="/animation/eat-fish.gif"
+      width="1200"
+      height="600"
+      alt="A crab follows a fish"
+    />
+    <div class="site-footer__resources">
       <a class="site-footer__author link-underline" href="https://github.com/nyaomaru" target="_blank" rel="noreferrer">
         <img
           class="site-footer__author-mark"
@@ -21,19 +28,12 @@ const { isHome } = Astro.props;
           alt="nyaomaru"
         />
       </a>
-    </span>
-    <img
-      class="site-footer__animation"
-      src="/animation/eat-fish.gif"
-      width="1200"
-      height="600"
-      alt="A crab follows a fish"
-    />
-    <nav class="site-footer__links" aria-label="Project resources">
-      {resourceNavigation.map((item) => (
-        <a class="link-underline" href={item.href} target="_blank" rel="noreferrer">{item.label}</a>
-      ))}
-    </nav>
+      <nav class="site-footer__links" aria-label="Project resources">
+        {resourceNavigation.map((item) => (
+          <a class="link-underline" href={item.href} target="_blank" rel="noreferrer">{item.label}</a>
+        ))}
+      </nav>
+    </div>
   </div>
 </footer>
 
@@ -47,7 +47,7 @@ const { isHome } = Astro.props;
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 2rem;
     width: min(100% - 6rem, 86rem);
     min-height: 10rem;
@@ -56,6 +56,12 @@ const { isHome } = Astro.props;
     color: var(--primary);
     font-size: 0.86rem;
     font-weight: 600;
+  }
+
+  .site-footer__resources {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .site-footer__links {
