@@ -1,6 +1,6 @@
 {
   "name": "type-tune",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Rust CLI for finding shared TypeScript types and moving them safely.",
   "keywords": [
     "cli",
@@ -47,11 +47,11 @@
     "typescript": "6.0.3"
   },
   "optionalDependencies": {
-    "@type-tune/darwin-arm64": "1.0.0",
-    "@type-tune/darwin-x64": "1.0.0",
-    "@type-tune/linux-x64-gnu": "1.0.0",
-    "@type-tune/linux-x64-musl": "1.0.0",
-    "@type-tune/win32-x64-msvc": "1.0.0"
+    "@type-tune/darwin-arm64": "1.0.1",
+    "@type-tune/darwin-x64": "1.0.1",
+    "@type-tune/linux-x64-gnu": "1.0.1",
+    "@type-tune/linux-x64-musl": "1.0.1",
+    "@type-tune/win32-x64-msvc": "1.0.1"
   },
   "engines": {
     "node": ">=22.0.0"
