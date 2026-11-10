@@ -248,7 +248,8 @@ const links = [
   .home-menu__links a:hover {
     transform: rotate(-3deg);
   }
-  :global(body.home-menu-open) {
+  :global(body.home-menu-open),
+  :global(body.home-menu-open) :global(.site-scroll) {
     overflow: hidden;
   }
   @media (max-width: 800px) {
