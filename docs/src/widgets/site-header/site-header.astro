@@ -38,14 +38,14 @@ const links = [
   </nav>
   <button class="home-header__toggle" type="button" aria-label="Open navigation"
     aria-haspopup="dialog" aria-controls="home-menu" aria-expanded="false" data-home-menu-toggle>
-    <img src="/parts/type-tune-smartphone-hamburger-menu.png" width="15" height="14" alt="" />
+    <img class="home-header__toggle-icon home-header__toggle-icon--open"
+      src="/parts/type-tune-smartphone-hamburger-menu.png" width="15" height="14" alt="" />
+    <img class="home-header__toggle-icon home-header__toggle-icon--close"
+      src="/parts/type-tune-smartphone-hamburger-menu-close.png" width="14" height="18" alt="" />
   </button>
 </header>
 
 <dialog id="home-menu" class="home-menu" aria-label="Primary navigation">
-  <button class="home-menu__close" type="button" aria-label="Close navigation" data-home-menu-close>
-    <img src="/parts/type-tune-smartphone-hamburger-menu-close.png" width="14" height="18" alt="" />
-  </button>
   <div class="home-menu__board">
     <img class="home-menu__crab" src="/parts/type-tune-smartphone-menu-crab.png" width="1155" height="1366" alt="" />
     <nav class="home-menu__links" aria-label="Mobile navigation">
@@ -65,28 +65,38 @@ const links = [
   const toggle = document.querySelector<HTMLButtonElement>("[data-home-menu-toggle]");
   const menu = document.querySelector<HTMLDialogElement>("#home-menu");
   if (toggle && menu) {
+    const setPageInert = (inert: boolean) => {
+      for (const selector of ["main", "#site-footer"]) {
+        const element = document.querySelector(selector);
+        if (!element) continue;
+        if (inert) element.setAttribute("inert", "");
+        else element.removeAttribute("inert");
+      }
+    };
     toggle.addEventListener("click", (event) => {
+      if (menu.open) {
+        menu.close();
+        return;
+      }
       const openedWithPointer = event.detail > 0;
       toggle.classList.toggle("home-header__toggle--pointer", openedWithPointer);
-      menu.classList.toggle("home-menu--pointer", openedWithPointer);
-      menu.showModal();
+      menu.show();
       toggle.setAttribute("aria-expanded", "true");
+      toggle.setAttribute("aria-label", "Close navigation");
       document.body.classList.add("home-menu-open");
+      setPageInert(true);
     });
-    menu.addEventListener("pointerdown", () => {
-      toggle.classList.add("home-header__toggle--pointer");
-      menu.classList.add("home-menu--pointer");
-    });
-    window.addEventListener("keydown", () => {
+    window.addEventListener("keydown", (event) => {
       toggle.classList.remove("home-header__toggle--pointer");
-      menu.classList.remove("home-menu--pointer");
+      if (event.key === "Escape" && menu.open) menu.close();
     });
-    menu.querySelector("[data-home-menu-close]")?.addEventListener("click", () => menu.close());
     menu.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => menu.close()));
     menu.addEventListener("click", (event) => { if (event.target === menu) menu.close(); });
     menu.addEventListener("close", () => {
       toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open navigation");
       document.body.classList.remove("home-menu-open");
+      setPageInert(false);
       toggle.focus({ preventScroll: true });
     });
     window.matchMedia("(min-width: 801px)").addEventListener("change", (event) => {
@@ -183,10 +193,14 @@ const links = [
   }
   .home-menu {
     position: fixed;
-    inset: 0;
+    top: var(--header-height);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
     width: 100%;
     max-width: none;
-    height: 100%;
+    height: auto;
     max-height: none;
     margin: 0;
     padding: 4rem 1.5rem 2rem;
@@ -198,35 +212,13 @@ const links = [
     display: grid;
     place-items: center;
   }
-  .home-menu::backdrop {
-    background: var(--background);
-  }
-  .home-menu__close {
-    position: absolute;
-    top: calc((var(--header-height) - 44px) / 2);
-    right: 1rem;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--primary);
-    cursor: pointer;
-  }
-  .home-menu__close img {
-    display: block;
-    width: 14px;
-    height: auto;
-  }
-  .home-header__toggle--pointer:focus-visible,
-  .home-menu--pointer .home-menu__close:focus-visible {
+  .home-header__toggle--pointer:focus-visible {
     outline: none;
   }
   .home-menu__board {
     position: relative;
     width: min(100%, 22rem, 70vh);
+    transform: translateY(-2rem);
   }
   .home-menu__crab {
     display: block;
@@ -283,16 +275,23 @@ const links = [
       background: transparent;
       cursor: pointer;
     }
+    .home-header__toggle-icon--close,
+    :global(body.home-menu-open) .home-header__toggle-icon--open {
+      display: none;
+    }
+    :global(body.home-menu-open) .home-header__toggle-icon--close {
+      display: block;
+      width: 14px;
+      height: auto;
+    }
     .home-menu__board {
-      width: calc(min(68vw, 28rem) * 1.235);
-      width: round(nearest, calc(min(68vw, 28rem) * 1.235), 2px);
+      width: min(68vw, 28rem);
     }
   }
 
   @media (max-width: 360px) {
     .home-menu__board {
-      width: calc(72vw * 1.235);
-      width: round(nearest, calc(72vw * 1.235), 2px);
+      width: 72vw;
     }
   }
 </style>
