@@ -80,6 +80,7 @@ const links = [
       }
       const openedWithPointer = event.detail > 0;
       toggle.classList.toggle("home-header__toggle--pointer", openedWithPointer);
+      menu.classList.toggle("home-menu--pointer", openedWithPointer);
       menu.show();
       toggle.setAttribute("aria-expanded", "true");
       toggle.setAttribute("aria-label", "Close navigation");
@@ -88,6 +89,7 @@ const links = [
     });
     window.addEventListener("keydown", (event) => {
       toggle.classList.remove("home-header__toggle--pointer");
+      menu.classList.remove("home-menu--pointer");
       if (event.key === "Escape" && menu.open) menu.close();
     });
     menu.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => menu.close()));
@@ -212,7 +214,8 @@ const links = [
     display: grid;
     place-items: center;
   }
-  .home-header__toggle--pointer:focus-visible {
+  .home-header__toggle--pointer:focus-visible,
+  .home-menu--pointer a:focus-visible {
     outline: none;
   }
   .home-menu__board {
