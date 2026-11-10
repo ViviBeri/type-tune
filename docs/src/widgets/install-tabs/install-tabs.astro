@@ -42,13 +42,14 @@ import HomeArt from "../../shared/ui/home-art.astro";
   }
   .install-section__dust {
     position: absolute;
-    top: -2rem;
-    left: 17%;
+    bottom: -2rem;
+    left: -7rem;
   }
   .install-section__crab {
     position: absolute;
-    bottom: -2rem;
+    top: 0;
     left: -7rem;
+    transform: translateY(-100%);
   }
   @media (max-width: 800px) {
     .install-section {
@@ -60,6 +61,7 @@ import HomeArt from "../../shared/ui/home-art.astro";
       top: -5rem;
       bottom: auto;
       left: -2rem;
+      transform: none;
     }
     .install-section__dust {
       top: auto;

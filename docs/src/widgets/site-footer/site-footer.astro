@@ -101,6 +101,13 @@ const { isHome } = Astro.props;
     image-rendering: pixelated;
   }
 
+  @media (min-width: 801px) {
+    .site-footer__resources {
+      justify-content: space-between;
+      width: 100%;
+    }
+  }
+
   @media (min-width: 801px) and (max-width: 1100px) {
     .site-footer__inner {
       padding-top: 9rem;
