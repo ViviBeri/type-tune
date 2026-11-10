@@ -16,19 +16,19 @@ importers:
         version: 6.0.3
     optionalDependencies:
       '@type-tune/darwin-arm64':
-        specifier: 1.0.0
+        specifier: 1.0.1
         version: link:packages/type-tune-darwin-arm64
       '@type-tune/darwin-x64':
-        specifier: 1.0.0
+        specifier: 1.0.1
         version: link:packages/type-tune-darwin-x64
       '@type-tune/linux-x64-gnu':
-        specifier: 1.0.0
+        specifier: 1.0.1
         version: link:packages/type-tune-linux-x64-gnu
       '@type-tune/linux-x64-musl':
-        specifier: 1.0.0
+        specifier: 1.0.1
         version: link:packages/type-tune-linux-x64-musl
       '@type-tune/win32-x64-msvc':
-        specifier: 1.0.0
+        specifier: 1.0.1
         version: link:packages/type-tune-win32-x64-msvc
 
   docs:
