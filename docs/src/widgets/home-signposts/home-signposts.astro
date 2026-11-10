@@ -16,7 +16,7 @@ const links = [
     {links.map(({ label, name, href, hover }) => (
       <a href={href} aria-label={label} target={name === "github" ? "_blank" : undefined} rel={name === "github" ? "noreferrer" : undefined}>
         <picture>
-          <source media="(max-width: 800px)" srcset={`/parts/type-tune-smartphone-wet-floor-sign-${name}.png`} width="63" height="55" />
+          <source media="(max-width: 800px)" srcset={`/parts/type-tune-smartphone-wet-floor-sign-${name}.png`} width="95" height="83" />
           <img class="home-signposts__normal" src={`/parts/type-tune-pc-wet-floor-sign-${name}-01.png`} width="171" height="159" alt="" />
         </picture>
         <img class="home-signposts__hover" src={`/parts/type-tune-pc-wet-floor-sign-${name}-${hover}.png`} width="171" height="159" alt="" />
@@ -47,11 +47,6 @@ const links = [
     max-width: 100%;
     height: auto;
   }
-  .home-signposts__normal,
-  .home-signposts__hover {
-    width: calc(171px - 0.5rem);
-    height: auto;
-  }
   .home-signposts__hover {
     position: absolute;
     inset: 0;
@@ -65,11 +60,12 @@ const links = [
   }
   .home-signposts__bucket {
     position: absolute;
-    left: -9rem;
-    bottom: 1rem;
+    left: -11rem;
+    bottom: 2rem;
   }
   @media (max-width: 800px) {
     .home-signposts {
+      max-width: none;
       margin-top: 2rem;
       padding-bottom: 4rem;
     }
@@ -77,8 +73,13 @@ const links = [
       gap: 1rem;
     }
     a {
-      width: 63px;
-      min-height: 55px;
+      flex: 0 0 calc(94.5px - 0.5rem);
+      width: calc(94.5px - 0.5rem);
+      min-height: calc(82.5px - 0.5rem);
+    }
+    .home-signposts__normal {
+      width: calc(94.5px - 0.5rem);
+      height: auto;
     }
     .home-signposts__hover {
       display: none;
@@ -89,7 +90,7 @@ const links = [
     }
     .home-signposts__bucket {
       left: -2.5rem;
-      bottom: 2rem;
+      bottom: 1rem;
     }
   }
 </style>
