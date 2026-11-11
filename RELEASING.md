@@ -57,10 +57,9 @@ when the next release can publish inside that window.
 GitHub Actions OIDC authentication is independent of `npm whoami`. A successful local login does
 not prove that the workflow can publish, and a missing local login does not block OIDC.
 
-Leave existing npm publishing tokens in place until one release has published all six packages
-through OIDC. After that release is verified, revoke the unused tokens from npm. Do not put an npm
-token in repository files, workflow logs, issue comments, or release notes. The workflow does not
-need the GitHub `NPM_TOKEN` secret; leave that secret in place until the OIDC release is verified.
+Publishing does not use a stored npm token. Revoke any leftover npm automation tokens, and do not
+keep a GitHub Actions `NPM_TOKEN` secret. Do not put an npm token in repository files, workflow
+logs, issue comments, or release notes.
 
 ## Prepare a release
 
