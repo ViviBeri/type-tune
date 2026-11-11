@@ -289,12 +289,22 @@ a {
     --header-height: 4rem;
   }
 
-  html {
+  html,
+  body {
+    height: 100dvh;
+    overflow: hidden;
+    scroll-behavior: auto;
+  }
+
+  .site-scroll {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: none;
     scroll-padding-top: calc(var(--header-height) + 0.5rem);
   }
 
-  body {
-    padding-top: var(--header-height);
+  body.home-menu-open .site-scroll {
+    overflow: hidden;
   }
 
   .docs-layout {

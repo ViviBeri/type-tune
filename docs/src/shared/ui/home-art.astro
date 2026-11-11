@@ -1,7 +1,9 @@
 ---
 interface Props {
   /** Asset name shared by PC and smartphone illustrations. */
-  name: string;
+  name?: string;
+  /** Shared asset for both breakpoints, such as an animation. */
+  src?: string;
   /** Desktop width. */
   width: number;
   /** Desktop height. */
@@ -13,11 +15,13 @@ interface Props {
   /** Accessible description; empty for decorative illustrations. */
   alt?: string;
 }
-const { name, width, height, mobileWidth, mobileHeight, alt = "" } = Astro.props;
+const { name, src, width, height, mobileWidth, mobileHeight, alt = "" } = Astro.props;
+const desktopSrc = src ?? `/parts/type-tune-pc-${name}.png`;
+const mobileSrc = src ?? `/parts/type-tune-smartphone-${name}.png`;
 ---
 <picture style={`--art-width: ${width}px; --art-mobile-width: ${mobileWidth}px`}>
-  <source media="(max-width: 800px)" srcset={`/parts/type-tune-smartphone-${name}.png`} width={mobileWidth} height={mobileHeight} />
-  <img src={`/parts/type-tune-pc-${name}.png`} width={width} height={height} alt={alt} />
+  <source media="(max-width: 800px)" srcset={mobileSrc} width={mobileWidth} height={mobileHeight} />
+  <img src={desktopSrc} width={width} height={height} alt={alt} />
 </picture>
 <style>
   picture {

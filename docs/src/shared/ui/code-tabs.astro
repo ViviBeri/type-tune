@@ -1,5 +1,4 @@
 ---
-import HomeArt from "./home-art.astro";
 import WavyUnderline from "./wavy-underline.astro";
 
 interface Props {
@@ -30,7 +29,7 @@ const hasMultipleTabs = commands.length > 1;
 <div class:list={["code-tabs", { "code-tabs--multiline": multiline }]} data-code-tabs>
   <canvas class="code-tabs__outline" aria-hidden="true"></canvas>
   {decoration === "dust" && <span class="code-tabs__dust" aria-hidden="true">
-    <HomeArt name="dust-01" width={92} height={81} mobileWidth={38} mobileHeight={34} />
+    <img src="/animation/dust.gif" width="500" height="450" alt="" />
   </span>}
   {decoration === "logo" && (
     <img
@@ -203,6 +202,11 @@ const hasMultipleTabs = commands.length > 1;
     right: -1.8rem;
     pointer-events: none;
   }
+  .code-tabs__dust img {
+    display: block;
+    width: 92px;
+    height: auto;
+  }
 
   .code-tabs__logo {
     position: absolute;
@@ -217,6 +221,9 @@ const hasMultipleTabs = commands.length > 1;
     .code-tabs__dust {
       top: -1rem;
       right: -0.3rem;
+    }
+    .code-tabs__dust img {
+      width: 38px;
     }
     .code-tabs__list {
       gap: 1rem;

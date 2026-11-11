@@ -28,7 +28,7 @@ const applyingCommands = [
     </div>
   </div>
   <div class="workflow-overview__types" aria-hidden="true">
-    <HomeArt name="cardboard-box-type" width={165} height={85} mobileWidth={76} mobileHeight={39} />
+    <HomeArt name="cardboard-box-type" width={206.25} height={106.25} mobileWidth={95} mobileHeight={48.75} />
   </div>
   <div class="workflow-overview__box" aria-hidden="true">
     <HomeArt name="cardboard-box-dust" width={129} height={93} mobileWidth={60} mobileHeight={43} />
@@ -73,18 +73,19 @@ const applyingCommands = [
   .workflow-overview__dust {
     position: absolute;
     z-index: 2;
-    top: -3.25rem;
+    top: -2.25rem;
     left: -1.5rem;
     pointer-events: none;
   }
   .workflow-overview__types {
     position: absolute;
-    bottom: -1rem;
-    left: -7rem;
+    top: 1.5rem;
+    left: 24rem;
+    transform: translate(-50%, -50%);
   }
   .workflow-overview__box {
     position: absolute;
-    bottom: 3rem;
+    bottom: 9.5rem;
     right: -5rem;
   }
   @media (max-width: 800px) {
@@ -105,12 +106,13 @@ const applyingCommands = [
     }
     .workflow-overview__types {
       top: -3rem;
+      right: auto;
       bottom: auto;
-      left: auto;
-      right: -2.5rem;
+      left: 9.5rem;
+      transform: translate(-50%, -50%);
     }
     .workflow-overview__box {
-      bottom: 0;
+      bottom: 5.5rem;
       right: -2rem;
     }
   }

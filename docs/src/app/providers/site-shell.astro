@@ -25,17 +25,19 @@ const pageTitle = title === "type-tune" ? title : `${title} · type-tune`;
     <title>{pageTitle}</title>
   </head>
   <body>
-    <SiteHeader />
-    <main class:list={["site-main", { "site-main--home": pathname === "/" }]}>
-      {withSidebar ? (
-        <div class="docs-layout">
-          <DocsSidebar pathname={pathname} />
-          <div class="docs-content"><slot /></div>
-        </div>
-      ) : (
-        <slot />
-      )}
-    </main>
-    <SiteFooter isHome={pathname === "/"} />
+    <div class="site-scroll">
+      <SiteHeader />
+      <main class:list={["site-main", { "site-main--home": pathname === "/" }]}>
+        {withSidebar ? (
+          <div class="docs-layout">
+            <DocsSidebar pathname={pathname} />
+            <div class="docs-content"><slot /></div>
+          </div>
+        ) : (
+          <slot />
+        )}
+      </main>
+      <SiteFooter isHome={pathname === "/"} />
+    </div>
   </body>
 </html>

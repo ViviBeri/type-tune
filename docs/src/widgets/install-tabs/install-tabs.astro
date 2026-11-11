@@ -17,11 +17,8 @@ import HomeArt from "../../shared/ui/home-art.astro";
     </p>
   </div>
   <CodeTabs commands={installCommands} decoration="dust" />
-  <div class="install-section__dust" aria-hidden="true">
-    <HomeArt name="dust-01" width={92} height={81} mobileWidth={38} mobileHeight={34} />
-  </div>
   <div class="install-section__crab" aria-hidden="true">
-    <HomeArt name="cardboard-box-crab" width={135} height={113} mobileWidth={62} mobileHeight={52} />
+    <HomeArt src="/animation/type-crab.gif" width={135} height={128} mobileWidth={62} mobileHeight={59} />
   </div>
 </section>
 <style>
@@ -40,15 +37,11 @@ import HomeArt from "../../shared/ui/home-art.astro";
     font: inherit;
     overflow-wrap: anywhere;
   }
-  .install-section__dust {
-    position: absolute;
-    top: -2rem;
-    left: 17%;
-  }
   .install-section__crab {
     position: absolute;
-    bottom: -2rem;
+    top: 0;
     left: -7rem;
+    transform: translateY(-100%);
   }
   @media (max-width: 800px) {
     .install-section {
@@ -60,11 +53,7 @@ import HomeArt from "../../shared/ui/home-art.astro";
       top: -5rem;
       bottom: auto;
       left: -2rem;
-    }
-    .install-section__dust {
-      top: auto;
-      bottom: 2rem;
-      left: 1rem;
+      transform: none;
     }
     p {
       margin-top: 1rem;
