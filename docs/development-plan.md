@@ -109,7 +109,7 @@ Release 前に必ず片付ける項目:
 
 - npm package name `type-tune` を確保して publish できる状態にする
 - `pnpm publish:check` を release 直前に通す
-- GitHub Actions Environment `npm` を Trusted Publishing 用に設定する
+- GitHub Actions secret `NPM_TOKEN` と Environment `npm` を設定する
 - npm pack の同梱ファイルを再確認する
 
 GitHub repository は公開済みの [necoz-oss/type-tune](https://github.com/necoz-oss/type-tune) を正とする。
