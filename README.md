@@ -173,7 +173,7 @@ Run the main checks with `pnpm check`, and run the documentation checks with `pn
 - [Official documentation](https://type-tune-nine.vercel.app/) · [npm package](https://www.npmjs.com/package/type-tune) · [GitHub Releases](https://github.com/necoz-oss/type-tune/releases)
 - [Architecture](docs/design.md) · [Requirements](docs/requirements.md)
 - [AI review](docs/ai-review-design.md) · [Release guide](RELEASING.md)
-- [Distribution](docs/rust-migration.md) · [Development status](docs/development-plan.md)
+- [Distribution](docs/rust-migration.md)
 
 <p align="center">
   <img src="docs/public/animation/eat-fish.gif" width="320" alt="Cat eating a fish animation" />
