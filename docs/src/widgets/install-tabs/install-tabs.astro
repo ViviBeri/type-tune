@@ -17,9 +17,6 @@ import HomeArt from "../../shared/ui/home-art.astro";
     </p>
   </div>
   <CodeTabs commands={installCommands} decoration="dust" />
-  <div class="install-section__dust" aria-hidden="true">
-    <img src="/parts/type-tune-smartphone-dust-01.png" width="38" height="34" alt="" />
-  </div>
   <div class="install-section__crab" aria-hidden="true">
     <HomeArt src="/animation/type-crab.gif" width={135} height={128} mobileWidth={62} mobileHeight={59} />
   </div>
@@ -40,14 +37,6 @@ import HomeArt from "../../shared/ui/home-art.astro";
     font: inherit;
     overflow-wrap: anywhere;
   }
-  .install-section__dust {
-    display: none;
-  }
-  .install-section__dust img {
-    display: block;
-    width: 38px;
-    height: auto;
-  }
   .install-section__crab {
     position: absolute;
     top: 0;
@@ -65,13 +54,6 @@ import HomeArt from "../../shared/ui/home-art.astro";
       bottom: auto;
       left: -2rem;
       transform: none;
-    }
-    .install-section__dust {
-      display: block;
-      position: absolute;
-      top: auto;
-      bottom: 2rem;
-      left: 1rem;
     }
     p {
       margin-top: 1rem;
