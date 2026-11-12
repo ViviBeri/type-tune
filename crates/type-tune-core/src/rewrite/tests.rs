@@ -3208,8 +3208,12 @@ fn preserves_aliased_mixed_imports_through_barrel_reexports() {
         ),
         (
             "src/app.ts".into(),
-            "import { type PublicA as LocalA, runtime } from './feature';\nexport const result: LocalA = { id: 'x' };\nexport const count = runtime;\n"
-                .into(),
+            concat!(
+                "import { type PublicA as LocalA, runtime } from './feature';\n",
+                "export const result: LocalA = { id: 'x' };\n",
+                "export const count = runtime;\n",
+            )
+            .into(),
         ),
     ]);
 
