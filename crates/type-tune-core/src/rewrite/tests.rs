@@ -3195,21 +3195,20 @@ fn preserves_type_only_default_imports_when_splitting() {
     );
 }
 
-
 #[test]
 fn preserves_aliased_mixed_imports_through_barrel_reexports() {
     let sources: BTreeMap<String, String> = BTreeMap::from([
         (
             "src/feature/schema.ts".into(),
-            "export type A = { id: string };\\nexport const runtime = 1;\\n".into(),
+            "export type A = { id: string };\nexport const runtime = 1;\n".into(),
         ),
         (
             "src/feature/index.ts".into(),
-            "export { type A as PublicA, runtime } from './schema';\\n".into(),
+            "export { type A as PublicA, runtime } from './schema';\n".into(),
         ),
         (
             "src/app.ts".into(),
-            "import { type PublicA as LocalA, runtime } from './feature';\\nexport const result: LocalA = { id: 'x' };\\nexport const count = runtime;\\n"
+            "import { type PublicA as LocalA, runtime } from './feature';\nexport const result: LocalA = { id: 'x' };\nexport const count = runtime;\n"
                 .into(),
         ),
     ]);
@@ -3230,7 +3229,7 @@ fn preserves_aliased_mixed_imports_through_barrel_reexports() {
     let destination = changes
         .get("src/feature/types/schema.ts")
         .expect("writes moved type destination");
-    assert_eq!(destination, "export type A = { id: string };\\n");
+    assert_eq!(destination, "export type A = { id: string };\n");
 
     let barrel = changes
         .get("src/feature/index.ts")
