@@ -3217,13 +3217,16 @@ fn preserves_aliased_mixed_imports_through_barrel_reexports() {
         ),
     ]);
 
-    let candidate = scan_project_files(
-        sources
-            .iter()
-            .map(|(path, source)| (path.clone(), source.clone()))
-            .collect(),
+    let candidate = apply_placement(
+        scan_project_files(
+            sources
+                .iter()
+                .map(|(path, source)| (path.clone(), source.clone()))
+                .collect(),
+        )
+        .expect("scans"),
+        PlacementStyle::Collocation,
     )
-    .expect("scans")
     .into_iter()
     .find(|candidate| candidate.symbol_name == "A")
     .expect("finds shared type");
