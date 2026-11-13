@@ -3238,7 +3238,10 @@ fn preserves_aliased_mixed_imports_through_barrel_reexports() {
     let barrel = changes
         .get("src/feature/index.ts")
         .expect("rewrites barrel export");
-    assert!(barrel.contains("export { runtime } from './schema';"), "{barrel}");
+    assert!(
+        barrel.contains("export { runtime } from './schema';"),
+        "{barrel}"
+    );
     assert!(
         barrel.contains("export type { A as PublicA } from './types/schema';"),
         "{barrel}"
@@ -3247,7 +3250,10 @@ fn preserves_aliased_mixed_imports_through_barrel_reexports() {
     let app = changes
         .get("src/app.ts")
         .expect("rewrites mixed consumer import");
-    assert!(app.contains("import { runtime } from './feature';"), "{app}");
+    assert!(
+        app.contains("import { runtime } from './feature';"),
+        "{app}"
+    );
     assert!(
         app.contains("import type { PublicA as LocalA } from './feature';"),
         "{app}"
