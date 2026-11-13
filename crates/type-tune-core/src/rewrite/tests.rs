@@ -3250,19 +3250,9 @@ fn preserves_aliased_mixed_imports_through_barrel_reexports() {
         "{barrel}"
     );
 
-    let app = changes
-        .get("src/app.ts")
-        .expect("rewrites mixed consumer import");
-    assert!(
-        app.contains("import { runtime } from './feature';"),
-        "{app}"
-    );
-    assert!(
-        app.contains("import type { PublicA as LocalA } from './feature';"),
-        "{app}"
-    );
-    assert!(app.contains("result: LocalA"), "{app}");
-    assert!(app.contains("count = runtime"), "{app}");
+    // The consumer continues importing through the public barrel; only the
+    // barrel's type re-export needs to point at the extracted declaration.
+    assert!(!changes.contains_key("src/app.ts"));
 
     compile_rewrite_fixture(&sources, &changes);
 }
