@@ -3234,7 +3234,7 @@ fn preserves_aliased_mixed_imports_through_barrel_reexports() {
     let changes = plan_extraction_rewrite(&[candidate], &sources).expect("plans extraction");
 
     let destination = changes
-        .get("src/feature/types/schema.ts")
+        .get("src/feature/types/feature.ts")
         .expect("writes moved type destination");
     assert_eq!(destination, "export type A = { id: string };\n");
 
@@ -3246,7 +3246,7 @@ fn preserves_aliased_mixed_imports_through_barrel_reexports() {
         "{barrel}"
     );
     assert!(
-        barrel.contains("export type { A as PublicA } from './types/schema';"),
+        barrel.contains("export type { A as PublicA } from './types/feature';"),
         "{barrel}"
     );
 
